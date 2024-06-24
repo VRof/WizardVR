@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.InputSystem.Android;
 
 
 public class TakePicture : MonoBehaviour
 {
+    static int counter = 0;
+    static byte[] lastPictureSaved; 
+
     // Start is called before the first frame update
     void Start()
     {
@@ -18,7 +23,7 @@ public class TakePicture : MonoBehaviour
         
     }
 
-    public void SavePicture(string path,Camera cam, GameObject tip) {
+    public static void SavePicture(Camera cam, GameObject tip) {
         cam.transform.LookAt(tip.transform);
 
         RenderTexture currentRT = RenderTexture.active;
@@ -26,19 +31,22 @@ public class TakePicture : MonoBehaviour
 
         cam.Render();
 
-        Texture2D Image = new Texture2D(128, cam.targetTexture.height);
+        Texture2D Image = new Texture2D(cam.targetTexture.width, cam.targetTexture.height);
         Image.ReadPixels(new Rect(0, 0, cam.targetTexture.width, cam.targetTexture.height), 0, 0);
         Image.Apply();
         RenderTexture.active = currentRT;
 
-        var bytes = Image.EncodeToJPG();
+        byte[] bytes = Image.EncodeToJPG();
+        lastPictureSaved = bytes;
         Destroy(Image);
 
-        //string filePath = Application.persistentDataPath + "/SavedRenderTexture.jpg";
-
         // Write to file
-        File.WriteAllBytes(path, bytes);
-        Debug.Log("RenderTexture saved as JPG to: " + path);
-
+        string filePath = Path.Combine(Application.persistentDataPath, "SavedRenderTexture" + counter + ".jpg");
+        counter++;
+        File.WriteAllBytes(filePath, bytes);
+        Debug.Log("RenderTexture saved as JPG to: " + filePath);
+    }
+    public static byte[] GetLastPictureAsData() {
+        return lastPictureSaved;
     }
 }

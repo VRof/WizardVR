@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using Unity.XR.OpenVR;
 using UnityEngine;
 using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class Draw : MonoBehaviour
 {
@@ -15,46 +14,32 @@ public class Draw : MonoBehaviour
     [Range(0.01f, 0.1f)]
     public float penWidth = 0.03f;
     [SerializeField][Range(0.01f, 0.5f)] private float DrawOffset = 0.1f;
-    [SerializeField] private Camera camera;
-    private TakePicture pictureSaver = new TakePicture();
-    private LineRenderer currentDrawing;
+    [SerializeField] private Camera cam;
+    private LineRenderer currentDrawing = null;
 
-
+    private void Start()
+    {
+    }
     // Update is called once per frame
     void Update()
     {
-        if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.triggerButton, out bool rightJoystickButtonPressed) && rightJoystickButtonPressed)
+        InputDevices.GetDeviceAtXRNode(XRNode.RightHand).IsPressed(InputHelpers.Button.TriggerButton, out bool rightJoystickButtonPressed);
+        if (rightJoystickButtonPressed)
         {
-                draw();
+           draw();
         }
         else if (!rightJoystickButtonPressed)
         {
-                if (currentDrawing != null)
-                {
+            if (currentDrawing != null)
+            {
                 currentDrawing.material = whiteMaterial;
                 //currentDrawingList.Add(currentDrawing.gameObject);
-                pictureSaver.SavePicture("C:\\Users\\madrat\\Desktop",camera, tip.gameObject);
+                TakePicture.SavePicture(cam, tip.gameObject);
+                pythonConnector.SetDataToSend("Predict");
                 Destroy(currentDrawing.gameObject);
                 currentDrawing = null;
-                }
-
+            }
         }
-        //if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.gripButton, out bool botton) && botton)
-        //{
-        //        if (currentDrawingList.Count != 0)
-        //        {
-        //            GameObject last = currentDrawingList[currentDrawingList.Count - 1];
-        //            cam.transform.LookAt(last.transform);
-                    
-        //            foreach (GameObject obj in currentDrawingList)
-        //            {
-        //                Debug.Log(obj.transform.position);
-        //                GameObject.Destroy(obj); // Destroy each object in the list
-        //            }
-
-        //           currentDrawingList.Clear(); // Clear the list after destroying all objects
-        //        }
-        //}
     }
 
     void draw()
