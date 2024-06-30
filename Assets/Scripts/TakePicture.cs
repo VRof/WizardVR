@@ -8,7 +8,6 @@ using UnityEngine.InputSystem.Android;
 
 public class TakePicture : MonoBehaviour
 {
-    static int counter = 0;
     static byte[] lastPictureSaved; 
 
     // Start is called before the first frame update
@@ -24,7 +23,7 @@ public class TakePicture : MonoBehaviour
     }
 
     public static void SavePicture(Camera cam, GameObject tip) {
-        cam.transform.LookAt(tip.transform);
+        cam.transform.LookAt(tip.transform.position);
 
         RenderTexture currentRT = RenderTexture.active;
         RenderTexture.active = cam.targetTexture;
@@ -39,12 +38,6 @@ public class TakePicture : MonoBehaviour
         byte[] bytes = Image.EncodeToJPG();
         lastPictureSaved = bytes;
         Destroy(Image);
-
-        // Write to file
-        string filePath = Path.Combine(Application.persistentDataPath, "SavedRenderTexture" + counter + ".jpg");
-        counter++;
-        File.WriteAllBytes(filePath, bytes);
-        Debug.Log("RenderTexture saved as JPG to: " + filePath);
     }
     public static byte[] GetLastPictureAsData() {
         return lastPictureSaved;

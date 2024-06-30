@@ -3,6 +3,7 @@ using Unity.XR.OpenVR;
 using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.InputSystem;
 
 public class Draw : MonoBehaviour
 {
@@ -16,26 +17,72 @@ public class Draw : MonoBehaviour
     [SerializeField][Range(0.01f, 0.5f)] private float DrawOffset = 0.1f;
     [SerializeField] private Camera cam;
     private LineRenderer currentDrawing = null;
+    private CastSystem castSystem;
+
+    public static System.Threading.SynchronizationContext syncContext;
+    // for Habib ************************************************
+    //private InputAction triggerAction;
+    //private bool triggerButtonPressed;
+    //private void OnEnable()
+    //{
+    //    // Setup the input action for the trigger button
+    //    triggerAction = new InputAction(type: InputActionType.Button, binding: "<XRController>{RightHand}/trigger");
+    //    triggerAction.performed += ctx => triggerButtonPressed = true;
+    //    triggerAction.canceled += ctx => triggerButtonPressed = false;
+    //    triggerAction.Enable();
+    //}
+
+    //private void OnDisable()
+    //{
+    //    triggerAction.Disable();
+    //    triggerAction.Dispose();
+    //}
+    //// Update for vr simulater
+    //void Update()
+    //{
+    //    if (triggerButtonPressed)
+    //    {
+    //        draw();
+    //    }
+    //    else
+    //    {
+    //        if (currentDrawing != null)
+    //        {
+    //            Debug.Log("New Drawing");
+    //            currentDrawing.material = whiteMaterial;
+    //            TakePicture.SavePicture(cam, tip.gameObject);
+    //            pythonConnector.SetDataToSend(TakePicture.GetLastPictureAsData());
+    //            Destroy(currentDrawing.gameObject);
+    //            currentDrawing = null;
+    //        }
+    //    }
+    //}
+    // ******************************************************************
+
 
     private void Start()
     {
+        syncContext = System.Threading.SynchronizationContext.Current;
+        castSystem = GetComponent<CastSystem>();
+        pythonConnector.OnDataReceived += castSystem.PrepareSkill;
     }
+
     // Update is called once per frame
     void Update()
     {
         InputDevices.GetDeviceAtXRNode(XRNode.RightHand).IsPressed(InputHelpers.Button.TriggerButton, out bool rightJoystickButtonPressed);
         if (rightJoystickButtonPressed)
         {
-           draw();
+            draw();
         }
         else if (!rightJoystickButtonPressed)
         {
             if (currentDrawing != null)
             {
+                //Debug.Log("New Drawing");
                 currentDrawing.material = whiteMaterial;
-                //currentDrawingList.Add(currentDrawing.gameObject);
                 TakePicture.SavePicture(cam, tip.gameObject);
-                pythonConnector.SetDataToSend("Predict");
+                pythonConnector.SetDataToSend(TakePicture.GetLastPictureAsData());
                 Destroy(currentDrawing.gameObject);
                 currentDrawing = null;
             }
@@ -55,7 +102,7 @@ public class Draw : MonoBehaviour
             currentDrawing.numCornerVertices = 20;
             currentDrawing.numCapVertices = 20;
             currentDrawing.SetPosition(0, tip.transform.position);
-            currentDrawing.gameObject.layer = LayerMask.NameToLayer("Projection"); // Change "YourLayerName" to the desired layer name
+            currentDrawing.gameObject.layer = LayerMask.NameToLayer("Projection"); 
         }
         else
         {

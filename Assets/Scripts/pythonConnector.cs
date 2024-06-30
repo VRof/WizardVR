@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Diagnostics;
 using System.IO;
 using Unity.VisualScripting;
+using System.Collections;
 
 
 public class pythonConnector : MonoBehaviour
@@ -22,6 +23,10 @@ public class pythonConnector : MonoBehaviour
     bool running;
     static byte[] myWriteBuffer;
     Process pythonProcess;
+
+    public delegate void DataReceivedEventHandler(string data);
+    public static event DataReceivedEventHandler OnDataReceived;
+
     private void Start()
     {
         ThreadStart ts = new ThreadStart(GetInfo);
@@ -32,8 +37,8 @@ public class pythonConnector : MonoBehaviour
 
     private void CreatePythonProcess() {
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = "python"; // replace with the actual path to your Python executable
-        startInfo.Arguments = Path.Combine(Application.dataPath, "Scripts", "unity_python.py"); ; // replace with the actual path to your Python script
+        startInfo.FileName = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.exe") + "\""; 
+        //startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "unity_python.py") + "\""; 
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         pythonProcess = Process.Start(startInfo);
@@ -43,6 +48,9 @@ public class pythonConnector : MonoBehaviour
     {
         pythonProcess.Kill();
     }
+
+
+
 
     void GetInfo()
     {
@@ -73,9 +81,15 @@ public class pythonConnector : MonoBehaviour
 
                     if (dataReceived != null)
                     {
-                        //---Using received data---
-                        UnityEngine.Debug.Log(dataReceived);
-
+                        //if(dataReceived == "none" || dataReceived == "not recognized")
+                        //{
+                        //    UnityEngine.Debug.Log("model couldn't recognize the spell!");
+                        //}
+                        //else
+                        //{
+                        //    UnityEngine.Debug.Log(dataReceived);
+                        //}
+                        OnDataReceived?.Invoke(dataReceived);
                     }
                 }
                 myWriteBuffer = null;
@@ -84,10 +98,8 @@ public class pythonConnector : MonoBehaviour
         listener.Stop();
     }
 
-
-    public static void SetDataToSend(string strToSend) {
-        myWriteBuffer = Encoding.ASCII.GetBytes(strToSend); //Converting string to byte data
+    public static void SetDataToSend(byte[] image) {
+        myWriteBuffer = image; 
     }
-
 }
 
