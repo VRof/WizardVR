@@ -37,8 +37,9 @@ public class pythonConnector : MonoBehaviour
 
     private void CreatePythonProcess() {
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.exe") + "\""; 
-        //startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "unity_python.py") + "\""; 
+        //startInfo.FileName = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython") + "\""; 
+        startInfo.FileName = "python";
+        startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\""; 
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         pythonProcess = Process.Start(startInfo);

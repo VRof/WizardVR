@@ -1,0 +1,51 @@
+base images inserted
+Predicted Class: fireball, Probability: 0.9992
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 0.9999
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 0.9999
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 0.9924
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 0.9970
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 0.9999
+Model Updated
+Predicted Class: none, Probability: 0.5740
+Model Not Updated
+Predicted Class: summon, Probability: 0.9933
+Model Updated
+Predicted Class: meteor, Probability: 0.9251
+Model Updated
+Predicted Class: meteor, Probability: 0.9815
+Model Updated
+Predicted Class: summon, Probability: 0.8200
+Model Not Updated
+Predicted Class: none, Probability: 0.8744
+Model Not Updated
+Predicted Class: summon, Probability: 0.9301
+Model Updated
+Predicted Class: meteor, Probability: 0.6574
+Model Not Updated
+Predicted Class: meteor, Probability: 0.9188
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated

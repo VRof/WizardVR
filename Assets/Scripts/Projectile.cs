@@ -49,7 +49,7 @@ public class Projectile : MonoBehaviour
     {
         //Lock all axes movement and rotation
         rb.constraints = RigidbodyConstraints.FreezeAll;
-        //speed = 0;
+        speed = 0;
 
         ContactPoint contact = collision.contacts[0];
         Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
