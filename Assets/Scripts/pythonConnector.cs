@@ -23,7 +23,7 @@ public class pythonConnector : MonoBehaviour
     bool running;
     static byte[] myWriteBuffer;
     Process pythonProcess;
-
+    public static string modelName;
     public delegate void DataReceivedEventHandler(string data);
     public static event DataReceivedEventHandler OnDataReceived;
 
@@ -37,21 +37,18 @@ public class pythonConnector : MonoBehaviour
 
     private void CreatePythonProcess() {
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        //startInfo.FileName = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython") + "\""; 
-        startInfo.FileName = "python";
-        startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\""; 
+        startInfo.FileName = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython") + "\"";
+        startInfo.Arguments = modelName; 
         startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         pythonProcess = Process.Start(startInfo);
+        UnityEngine.Debug.Log(modelName + " started");
     }
 
     private void OnApplicationQuit()
     {
         pythonProcess.Kill();
     }
-
-
-
 
     void GetInfo()
     {

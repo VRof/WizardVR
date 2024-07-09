@@ -21,42 +21,42 @@ public class Draw : MonoBehaviour
 
     public static System.Threading.SynchronizationContext syncContext;
     // for Habib ************************************************
-    //private InputAction triggerAction;
-    //private bool triggerButtonPressed;
-    //private void OnEnable()
-    //{
-    //    // Setup the input action for the trigger button
-    //    triggerAction = new InputAction(type: InputActionType.Button, binding: "<XRController>{RightHand}/trigger");
-    //    triggerAction.performed += ctx => triggerButtonPressed = true;
-    //    triggerAction.canceled += ctx => triggerButtonPressed = false;
-    //    triggerAction.Enable();
-    //}
+    private InputAction triggerAction;
+    private bool triggerButtonPressed;
+    private void OnEnable()
+    {
+        // Setup the input action for the trigger button
+        triggerAction = new InputAction(type: InputActionType.Button, binding: "<XRController>{RightHand}/trigger");
+        triggerAction.performed += ctx => triggerButtonPressed = true;
+        triggerAction.canceled += ctx => triggerButtonPressed = false;
+        triggerAction.Enable();
+    }
 
-    //private void OnDisable()
-    //{
-    //    triggerAction.Disable();
-    //    triggerAction.Dispose();
-    //}
-    //// Update for vr simulater
-    //void Update()
-    //{
-    //    if (triggerButtonPressed)
-    //    {
-    //        draw();
-    //    }
-    //    else
-    //    {
-    //        if (currentDrawing != null)
-    //        {
-    //            Debug.Log("New Drawing");
-    //            currentDrawing.material = whiteMaterial;
-    //            TakePicture.SavePicture(cam, tip.gameObject);
-    //            pythonConnector.SetDataToSend(TakePicture.GetLastPictureAsData());
-    //            Destroy(currentDrawing.gameObject);
-    //            currentDrawing = null;
-    //        }
-    //    }
-    //}
+    private void OnDisable()
+    {
+        triggerAction.Disable();
+        triggerAction.Dispose();
+    }
+    // Update for vr simulater
+    void Update()
+    {
+        if (triggerButtonPressed)
+        {
+            draw();
+        }
+        else
+        {
+            if (currentDrawing != null)
+            {
+                Debug.Log("New Drawing");
+                currentDrawing.material = whiteMaterial;
+                TakePicture.SavePicture(cam, tip.gameObject);
+                pythonConnector.SetDataToSend(TakePicture.GetLastPictureAsData());
+                Destroy(currentDrawing.gameObject);
+                currentDrawing = null;
+            }
+        }
+    }
     // ******************************************************************
 
 
@@ -68,30 +68,29 @@ public class Draw : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        InputDevices.GetDeviceAtXRNode(XRNode.RightHand).IsPressed(InputHelpers.Button.TriggerButton, out bool rightJoystickButtonPressed);
-        if (rightJoystickButtonPressed)
-        {
-            draw();
-        }
-        else if (!rightJoystickButtonPressed)
-        {
-            if (currentDrawing != null)
-            {
-                //Debug.Log("New Drawing");
-                currentDrawing.material = whiteMaterial;
-                TakePicture.SavePicture(cam, tip.gameObject);
-                pythonConnector.SetDataToSend(TakePicture.GetLastPictureAsData());
-                Destroy(currentDrawing.gameObject);
-                currentDrawing = null;
-            }
-        }
-    }
+    //void Update()
+    //{
+    //    InputDevices.GetDeviceAtXRNode(XRNode.RightHand).IsPressed(InputHelpers.Button.TriggerButton, out bool rightJoystickButtonPressed);
+    //    if (rightJoystickButtonPressed)
+    //    {
+    //        draw();
+    //    }
+    //    else if (!rightJoystickButtonPressed)
+    //    {
+    //        if (currentDrawing != null)
+    //        {
+    //            //Debug.Log("New Drawing");
+    //            currentDrawing.material = whiteMaterial;
+    //            TakePicture.SavePicture(cam, tip.gameObject);
+    //            pythonConnector.SetDataToSend(TakePicture.GetLastPictureAsData());
+    //            Destroy(currentDrawing.gameObject);
+    //            currentDrawing = null;
+    //        }
+    //    }
+    //}
 
     void draw()
     {
-
         if (currentDrawing == null)
         {
             currentDrawing = new GameObject().AddComponent<LineRenderer>();
