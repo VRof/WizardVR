@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.InputSystem;
+using System.IO;
 
 public class Draw : MonoBehaviour
 {
@@ -79,9 +80,8 @@ public class Draw : MonoBehaviour
         {
             if (currentDrawing != null)
             {
-                //Debug.Log("New Drawing");
                 currentDrawing.material = whiteMaterial;
-                TakePicture.SavePicture(cam, tip.gameObject);
+                TakePicture.SavePicture(cam, currentDrawing);
                 pythonConnector.SetDataToSend(TakePicture.GetLastPictureAsData());
                 Destroy(currentDrawing.gameObject);
                 currentDrawing = null;
@@ -114,4 +114,5 @@ public class Draw : MonoBehaviour
             }
         }
     }
+
 }

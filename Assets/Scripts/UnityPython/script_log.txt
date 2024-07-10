@@ -1,51 +1,81 @@
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
 base images inserted
-Predicted Class: fireball, Probability: 0.9992
+Predicted Class: fireball, Probability: 1.0000
 Model Updated
 Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: frostbolt, Probability: 0.9999
+Model Updated
+Predicted Class: none, Probability: 0.9758
+Model Updated
+Predicted Class: frostbolt, Probability: 0.9962
+Model Updated
+Predicted Class: none, Probability: 0.8848
+Model Not Updated
+Predicted Class: frostbolt, Probability: 0.9144
+Model Updated
+Predicted Class: frostbolt, Probability: 0.6249
+Model Not Updated
+Predicted Class: none, Probability: 0.9999
+Model Updated
+Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: frostbolt, Probability: 0.9354
 Model Updated
 Predicted Class: fireball, Probability: 0.9999
 Model Updated
-Predicted Class: fireball, Probability: 1.0000
+Predicted Class: meteor, Probability: 0.9879
 Model Updated
-Predicted Class: fireball, Probability: 1.0000
+Predicted Class: meteor, Probability: 0.9906
 Model Updated
-Predicted Class: fireball, Probability: 0.9999
+Predicted Class: meteor, Probability: 0.9999
 Model Updated
-Predicted Class: fireball, Probability: 1.0000
+Predicted Class: meteor, Probability: 0.9963
 Model Updated
-Predicted Class: fireball, Probability: 1.0000
+Predicted Class: none, Probability: 1.0000
 Model Updated
-Predicted Class: fireball, Probability: 0.9924
+Predicted Class: none, Probability: 1.0000
 Model Updated
-Predicted Class: fireball, Probability: 1.0000
+Predicted Class: none, Probability: 0.9955
 Model Updated
-Predicted Class: fireball, Probability: 1.0000
+Predicted Class: none, Probability: 1.0000
 Model Updated
-Predicted Class: fireball, Probability: 1.0000
+Predicted Class: none, Probability: 1.0000
 Model Updated
-Predicted Class: fireball, Probability: 0.9970
+Predicted Class: none, Probability: 1.0000
 Model Updated
-Predicted Class: fireball, Probability: 1.0000
+Predicted Class: none, Probability: 1.0000
 Model Updated
-Predicted Class: fireball, Probability: 0.9999
+Predicted Class: none, Probability: 1.0000
 Model Updated
-Predicted Class: none, Probability: 0.5740
+Predicted Class: none, Probability: 1.0000
+Model Updated
+Predicted Class: none, Probability: 1.0000
+Model Updated
+Predicted Class: none, Probability: 0.9999
+Model Updated
+Predicted Class: none, Probability: 1.0000
+Model Updated
+Predicted Class: none, Probability: 1.0000
+Model Updated
+Predicted Class: none, Probability: 1.0000
+Model Updated
+Predicted Class: fireball, Probability: 0.8250
 Model Not Updated
-Predicted Class: summon, Probability: 0.9933
-Model Updated
-Predicted Class: meteor, Probability: 0.9251
-Model Updated
-Predicted Class: meteor, Probability: 0.9815
-Model Updated
-Predicted Class: summon, Probability: 0.8200
+Predicted Class: none, Probability: 0.5055
 Model Not Updated
-Predicted Class: none, Probability: 0.8744
-Model Not Updated
-Predicted Class: summon, Probability: 0.9301
+Predicted Class: fireball, Probability: 1.0000
 Model Updated
-Predicted Class: meteor, Probability: 0.6574
-Model Not Updated
-Predicted Class: meteor, Probability: 0.9188
+Predicted Class: none, Probability: 0.9999
 Model Updated
 Predicted Class: fireball, Probability: 1.0000
+Model Updated
+Predicted Class: none, Probability: 1.0000
+Model Updated
+Predicted Class: none, Probability: 1.0000
+Model Updated
+Predicted Class: none, Probability: 1.0000
+Model Updated
+Predicted Class: none, Probability: 1.0000
 Model Updated

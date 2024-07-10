@@ -1,29 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.InputSystem.Android;
+using UnityEngine.Rendering;
 
 
 public class TakePicture : MonoBehaviour
 {
-    static byte[] lastPictureSaved; 
+    static byte[] lastPictureSaved;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    //static int index = 0;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public static void SavePicture(Camera cam, LineRenderer currentDrawing) {
 
-    public static void SavePicture(Camera cam, GameObject tip) {
-        cam.transform.LookAt(tip.transform.position);
+        GameObject tip = GameObject.Find("tip");
+        // Calculate bounds of the drawing
+        Bounds bounds = new Bounds(currentDrawing.GetPosition(0), Vector3.zero);
+        for (int i = 1; i < currentDrawing.positionCount; i++)
+        {
+            bounds.Encapsulate(currentDrawing.GetPosition(i));
+        }
+
+        float size = Mathf.Max(bounds.size.x, bounds.size.y) / 2f + 0.2f;
+        cam.orthographicSize = size;
+        cam.transform.position = tip.transform.position - tip.transform.forward*10; // Move camera back a bit
+        //cam.transform.rotation = tip.transform.rotation;
+        cam.transform.LookAt(bounds.center);
+
 
         RenderTexture currentRT = RenderTexture.active;
         RenderTexture.active = cam.targetTexture;
@@ -37,8 +43,17 @@ public class TakePicture : MonoBehaviour
 
         byte[] bytes = Image.EncodeToJPG();
         lastPictureSaved = bytes;
+
+        // Save to file
+        string filePath = Path.Combine(Application.persistentDataPath, "drawing" + ".jpg");
+        File.WriteAllBytes(filePath, bytes);
+        Debug.Log("Image saved to: " + filePath);
+
         Destroy(Image);
     }
+
+
+
     public static byte[] GetLastPictureAsData() {
         return lastPictureSaved;
     }

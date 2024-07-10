@@ -6,6 +6,8 @@ import warnings
 import numpy as np
 from PIL import Image
 import logging
+from matplotlib import pyplot as plt
+from matplotlib import image as mpimg
 
 warnings.filterwarnings("ignore")
 logging.getLogger('absl').setLevel(logging.ERROR)
@@ -35,7 +37,9 @@ def log_message(message):
 def preprocess_image(image_bytes):
     try:
         img = Image.open(io.BytesIO(image_bytes))
-        upscale_factor = 1.5
+
+
+        upscale_factor = 1
         new_width = int(img.width * upscale_factor)
         new_height = int(img.height * upscale_factor)
         img = img.resize((new_width, new_height))
@@ -46,6 +50,8 @@ def preprocess_image(image_bytes):
         img = img.crop((left, top, right, bottom))
         new_size = (128, 128)
         img = img.resize(new_size)
+        # plt.imshow(img)
+        # plt.show()
         img_array = img_to_array(img) / 255.0
         img_array = np.expand_dims(img_array, axis=0)
         return img_array
@@ -159,7 +165,7 @@ except Exception as e:
 
 # start listening
 while True:
-    received_data = sock.recv(4096)
+    received_data = sock.recv(10000)
     if not received_data:
         continue
     else:
@@ -177,8 +183,8 @@ while True:
                 image_batch_array = np.array(image_batch)
                 label_batch_to_categorical = to_categorical(label_batch, num_classes=len(class_labels))
 
-               # update_model(model, image_batch_array, label_batch_to_categorical)
-               # save_model(model_path)
+                update_model(model, image_batch_array, label_batch_to_categorical)
+                save_model(model_path)
                 log_message(f"Model Updated")
             else:
                 sock.sendall("not recognized".encode("UTF-8"))
