@@ -32,7 +32,7 @@ public class pythonConnector : MonoBehaviour
         ThreadStart ts = new ThreadStart(GetInfo);
         mThread = new Thread(ts);
         mThread.Start();
-        CreatePythonProcess();
+        //CreatePythonProcess();
     }
 
     private void CreatePythonProcess() {
