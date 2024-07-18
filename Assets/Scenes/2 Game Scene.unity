@@ -1861,7 +1861,7 @@ GameObject:
   - component: {fileID: 200893877}
   - component: {fileID: 200893876}
   - component: {fileID: 200893878}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: OutsideTerrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9061,7 +9061,7 @@ GameObject:
   - component: {fileID: 1064409601}
   - component: {fileID: 1064409603}
   - component: {fileID: 1064409602}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Terrain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13182,7 +13182,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1480510364}
   - component: {fileID: 1480510365}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
