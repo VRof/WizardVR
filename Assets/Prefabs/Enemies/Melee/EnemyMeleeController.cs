@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 
 [RequireComponent(typeof(NavMeshAgent))]
@@ -14,22 +15,30 @@ public class EnemyMeleeController : MonoBehaviour
     [SerializeField] float AttackRange = 2f;
     [SerializeField] float AttackCooldown = 1f;
     [SerializeField] float RunSpeedThreshold = 1.5f;
+    [SerializeField] float DetectionRange = 20f;
+
 
     private NavMeshAgent navMeshAgent;
     private Animator animator;
     private bool isAttacking = false;
     private bool isWalking = false;
     private bool isRunning = false;
+    private bool isInCombat = false;
     // Start is called before the first frame update
     void Start()
     {
         animator = GetComponentInChildren<Animator>();
         navMeshAgent = GetComponent<NavMeshAgent>();
-        StartCoroutine(FollowTarget());
     }
 
     void Update()
     {
+        if (!isInCombat && (Target.transform.position - transform.position).magnitude <= DetectionRange) {
+            isInCombat = true;
+        }
+        if (isInCombat) {
+            StartCoroutine(FollowTarget());
+        }
         UpdateAnimationState();
     }
 
@@ -54,6 +63,7 @@ public class EnemyMeleeController : MonoBehaviour
 
         if (distanceToTarget <= AttackRange && !isAttacking)
         {
+            transform.LookAt(Target.transform.position);
             StartCoroutine(AttackTarget());
         }
         else

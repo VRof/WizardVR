@@ -8143,7 +8143,8 @@ MonoBehaviour:
   PathUpdateSpeed: 0.1
   AttackRange: 2
   AttackCooldown: 2
-  RunSpeedThreshold: 0.76
+  RunSpeedThreshold: 1.5
+  DetectionRange: 20
 --- !u!1 &1900203786087924510
 GameObject:
   m_ObjectHideFlags: 0

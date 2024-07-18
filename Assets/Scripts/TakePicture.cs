@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,7 @@ public class TakePicture : MonoBehaviour
 {
     static byte[] lastPictureSaved;
 
-    //static int index = 0;
+    static int index = 0;
 
     public static void SavePicture(Camera cam, LineRenderer currentDrawing) {
 
@@ -45,7 +46,8 @@ public class TakePicture : MonoBehaviour
         lastPictureSaved = bytes;
 
         // Save to file
-        string filePath = Path.Combine(Application.persistentDataPath, "drawing" + ".jpg");
+        string currentTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        string filePath = Path.Combine(Application.persistentDataPath, "drawing_" + currentTime + ".jpg");
         File.WriteAllBytes(filePath, bytes);
         Debug.Log("Image saved to: " + filePath);
 
