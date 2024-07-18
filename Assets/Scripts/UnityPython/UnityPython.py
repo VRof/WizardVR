@@ -1,195 +1,203 @@
 import io
 import socket
-import os
 import sys
-import warnings
 import numpy as np
+import os
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D, Dense, Dropout
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
 from PIL import Image
-import logging
-from matplotlib import pyplot as plt
-from matplotlib import image as mpimg
 
-warnings.filterwarnings("ignore")
-logging.getLogger('absl').setLevel(logging.ERROR)
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# Define the model
+def create_model(num_classes):
+    model = Sequential([
+        Conv2D(32, (3, 3), activation='relu', input_shape=(128, 128, 1)),
+        MaxPooling2D((2, 2)),
+        Conv2D(64, (3, 3), activation='relu'),
+        MaxPooling2D((2, 2)),
+        Conv2D(64, (3, 3), activation='relu'),
+        MaxPooling2D((2, 2)),
+        Conv2D(128, (3, 3), activation='relu'),
+        GlobalAveragePooling2D(),
+        Dense(128, activation='relu'),
+        Dropout(0.5),
+        Dense(64, activation='relu'),
+        Dropout(0.2),
+        Dense(num_classes, activation='softmax')
+    ])
+    
+    model.compile(optimizer=Adam(learning_rate=0.0001),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    
+    return model
 
-from keras.api.preprocessing.image import img_to_array
-from keras.api.models import load_model
-from keras.api.utils import to_categorical
+# # Load images and labels from directories
+# def load_data(base_path):
+#     images = []
+#     labels = []
+#     class_names = []
+    
+#     for class_index, class_name in enumerate(sorted(os.listdir(base_path))):
+#         class_path = os.path.join(base_path, class_name)
+#         if os.path.isdir(class_path):
+#             class_names.append(class_name)
+#             for image_name in os.listdir(class_path):
+#                 image_path = os.path.join(class_path, image_name)
+#                 try:
+#                     image = Image.open(image_path).convert('L')  # Convert to grayscale
+#                     image = image.resize((128, 128))
+#                     image = np.array(image)
+#                     images.append(image)
+#                     labels.append(len(class_names) - 1)  # Use the current length of class_names as the label
+#                 except Exception as e:
+#                     print(f"Error loading image {image_path}: {e}")
+    
+#     return np.array(images), np.array(labels), class_names
 
-log_file = "script_log.txt"
-try:
-    script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    script_path = os.path.join(script_dir, log_file)
-    if os.path.exists(script_path) and os.path.getsize(script_path) > 0:
-        with open(script_path, 'w', encoding='utf-8') as f:
-            f.write('')
-except Exception:
-    pass
+# Train and save the model
+def train_and_save_model(images, labels, class_names, model_save_path):
+    # Convert labels to categorical
+    num_classes = len(class_names)
+    labels_categorical = to_categorical(labels, num_classes=num_classes)
 
+    # Split the data into training and validation sets
+    X_train, X_val, y_train, y_val = train_test_split(images, labels_categorical, test_size=0.2, random_state=42)
 
-def log_message(message):
-    with open(script_path, 'a', encoding='utf-8') as folder:
-        folder.write(message + '\n')
+    # Normalize the data
+    X_train = X_train.reshape(X_train.shape[0], 128, 128, 1).astype('float32') / 255
+    X_val = X_val.reshape(X_val.shape[0], 128, 128, 1).astype('float32') / 255
 
+    # Initialize the model
+    model = create_model(num_classes)
 
-def preprocess_image(image_bytes):
-    try:
-        img = Image.open(io.BytesIO(image_bytes))
+    # Data augmentation for training
+    datagen = ImageDataGenerator(
+        rotation_range=10,
+        width_shift_range=0.1,
+        height_shift_range=0.1,
+        zoom_range=0.1,
+        horizontal_flip=False,
+        vertical_flip=False
+    )
 
+    # Train the model
+    batch_size = 32
+    epochs = 50
 
-        upscale_factor = 1
-        new_width = int(img.width * upscale_factor)
-        new_height = int(img.height * upscale_factor)
-        img = img.resize((new_width, new_height))
-        left = (new_width - 250) / 2
-        top = (new_height - 250) / 2
-        right = (new_width + 250) / 2
-        bottom = (new_height + 250) / 2
-        img = img.crop((left, top, right, bottom))
-        new_size = (128, 128)
-        img = img.resize(new_size)
-        # plt.imshow(img)
-        # plt.show()
-        img_array = img_to_array(img) / 255.0
-        img_array = np.expand_dims(img_array, axis=0)
-        return img_array
-    except Exception as e:
-        log_message(f"Error in preprocessing image: {e}")
-        exit(1)
+    history = model.fit(
+        datagen.flow(X_train, y_train, batch_size=batch_size),
+        steps_per_epoch=len(X_train) // batch_size,
+        epochs=epochs,
+        validation_data=(X_val, y_val)
+    )
 
+    # Save the model
+    model.save(model_save_path)
+    print(f"Model saved to {model_save_path}")
 
-# Update the model with new data
-def update_model(model, images, labels):
-    try:
-        model.fit(images, labels, epochs=1, batch_size=len(images), verbose=0)
-    except Exception as e:
-        log_message(f"Error in updating model: {e}")
-        exit(1)
+    return model, history
 
+# Function to load the model
+def load_saved_model(model_path):
+    model = tf.keras.models.load_model(model_path)
+    model.compile(optimizer=Adam(learning_rate=0.0001),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    return model
 
-def save_model(model_path):
-    try:
-        model.save(model_path)
-    except Exception as e:
-        log_message(f"Error in saving model: {e}")
-        exit(1)
-
-
-def image_to_bytes(image_path):
-    try:
-        with open(image_path, 'rb') as image_file:
-            image = Image.open(image_file)
-            byte_arr = io.BytesIO()
-            image.save(byte_arr, format=image.format)
-            return byte_arr.getvalue()
-    except Exception as e:
-        log_message(f"{e}")
-        exit(1)
-
-
-# class_labels = ['heal', 'summon', 'frostbolt', 'fireball', 'teleport', 'shield', 'shock', 'none', 'meteor'] # for trained_model_new*
-class_labels = ['none', 'heal', 'summon', 'frostbolt', 'fireball', 'teleport', 'shield', 'shock',
-                'meteor']  # for trained_model_3
-
-image_batch = []
-label_batch = []
-
-# load base images for image batch
-try:
-    image_batch.append(preprocess_image(
-        image_to_bytes(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "none_base.jpg")))[0])
-    label_batch.append(0)
-
-    image_batch.append(preprocess_image(
-        image_to_bytes(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "heal_base.jpg")))[0])
-    label_batch.append(1)
-
-    image_batch.append(preprocess_image(
-        image_to_bytes(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "summon_base.jpg")))[
-                           0])
-    label_batch.append(2)
-
-    image_batch.append(preprocess_image(
-        image_to_bytes(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "frost_bolt.jpg")))[
-                           0])
-    label_batch.append(3)
-
-    image_batch.append(preprocess_image(image_to_bytes(
-        os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "fireball_base.jpg")))[0])
-    label_batch.append(4)
-
-    image_batch.append(preprocess_image(image_to_bytes(
-        os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "teleport_base.jpg")))[0])
-    label_batch.append(5)
-
-    image_batch.append(preprocess_image(
-        image_to_bytes(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "shield_base.jpg")))[
-                           0])
-    label_batch.append(6)
-
-    image_batch.append(preprocess_image(
-        image_to_bytes(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "shock_base.jpg")))[
-                           0])
-    label_batch.append(7)
-
-    image_batch.append(preprocess_image(
-        image_to_bytes(os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "base_images", "meteor_base.jpg")))[
-                           0])
-    label_batch.append(8)
-except Exception as e:
-    log_message(f"{e}")
-    exit(1)
-
-log_message("base images inserted")
-
-# create socket
-try:
-    host, port = "127.0.0.1", 25001
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((host, port))
-except Exception as e:
-    log_message(f"error in socket {e}")
-    exit(1)
-
-# load model
-try:
-    model_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-    model_path = os.path.join(model_dir, "trained_model_3.h5")
-    model = load_model(model_path, compile=False)
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-except Exception as e:
-    log_message(f"Error in loading model : {e}")
-    exit(1)
-
-# start listening
-while True:
-    received_data = sock.recv(10000)
-    if not received_data:
-        continue
+# Function to predict the skill
+def predict_skill(model, image, class_names):
+    if isinstance(image, Image.Image):
+        # Convert PIL Image to numpy array
+        image = np.array(image.convert('L'))  # Convert to grayscale
+        image = image.reshape(1, 128, 128, 1)  # Reshape for model input
     else:
-        try:
-            img_array = preprocess_image(received_data)
-            predictions = model.predict(img_array, verbose=0)
-            predicted_index = np.argmax(predictions)
-            predicted_class = class_labels[predicted_index]
-            probability = predictions[0][predicted_index]
-            log_message(f"Predicted Class: {predicted_class}, Probability: {probability:.4f}")
-            if probability > 0.90:
-                sock.sendall(predicted_class.encode("UTF-8"))  # send to unity
-                image_batch.pop(predicted_index)
-                image_batch.insert(predicted_index, img_array[0])
-                image_batch_array = np.array(image_batch)
-                label_batch_to_categorical = to_categorical(label_batch, num_classes=len(class_labels))
+        # Assume it's already a numpy array
+        image = image.reshape(1, 128, 128, 1)
+    
+    image = image.astype('float32') / 255
+    prediction = model.predict(image)[0]
+    predicted_skill_index = np.argmax(prediction)
+    confidence = prediction[predicted_skill_index]
+    predicted_skill_name = class_names[predicted_skill_index]
+    return predicted_skill_name, confidence
 
-                update_model(model, image_batch_array, label_batch_to_categorical)
-                save_model(model_path)
-                log_message(f"Model Updated")
-            else:
-                sock.sendall("not recognized".encode("UTF-8"))
-                log_message(f"Model Not Updated")
-        except Exception as e:
-            log_message(f"Error during prediction: {e}")
-            sock.sendall(f"Error during prediction: {e}".encode("UTF-8"))
-            exit(1)
+@tf.function
+def train_step(model, images, labels):
+    with tf.GradientTape() as tape:
+        predictions = model(images, training=True)
+        loss = tf.keras.losses.categorical_crossentropy(labels, predictions)
+    gradients = tape.gradient(loss, model.trainable_variables)
+    model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    return loss
+
+def update_model(model, image, skill_index, class_names):
+    # Preprocess the image
+    image = image.reshape(1, 128, 128, 1).astype('float32') / 255
+    
+    # Create a one-hot encoded label
+    label = np.zeros((1, len(class_names)))
+    label[0, skill_index] = 1
+    
+    # Convert to tensors
+    image_tensor = tf.convert_to_tensor(image)
+    label_tensor = tf.convert_to_tensor(label)
+    
+    # Update the model
+    loss = train_step(model, image_tensor, label_tensor)
+    return loss
+
+# Main execution
+if __name__ == "__main__":
+    model_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+    base_path = os.path.join(model_dir,"spell_recognition_model.h5")
+    model_save_path = base_path  # Path to save the model
+
+    class_names = np.array(['fireball', 'frostbolt', 'heal', 'meteor', 'others', 'shield', 'summon', 'teleport'])
+
+    # Load the model
+    loaded_model = load_saved_model(model_save_path)
+
+    try:
+        host, port = "127.0.0.1", 25001
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.connect((host, port))
+    except Exception as e:
+        print(f"Error connecting to socket: {e}")
+        exit(1)
+
+    while True:
+        received_data = sock.recv(10000)
+        if not received_data:
+            continue
+        else:
+            try:
+                # Convert received data to PIL Image
+                drawn_image = Image.open(io.BytesIO(received_data))
+                
+                # Resize the image to 128x128 if it's not already
+                #drawn_image = drawn_image.resize((128, 128))
+                
+                predicted_skill, confidence = predict_skill(loaded_model, drawn_image, class_names)
+                print(f"Predicted skill: {predicted_skill}")
+                print(f"Confidence: {confidence}")
+                
+                if confidence > 0.90 and predicted_skill != "others":
+                    sock.sendall(predicted_skill.encode("UTF-8"))  # send to unity
+                    #update
+                else:
+                    sock.sendall("not recognized".encode("UTF-8"))
+            except Exception as e:
+                print(f"Error during prediction: {e}")
+                sock.sendall(f"Error during prediction: {e}".encode("UTF-8"))
+                # Don't exit here, continue the loop
+
+
+    # Don't forget to save the updated model periodically if you're updating it during gameplay
+    # loaded_model.save(model_save_path)
+
