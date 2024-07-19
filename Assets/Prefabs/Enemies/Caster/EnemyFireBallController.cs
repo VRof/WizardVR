@@ -5,6 +5,9 @@ using UnityEngine;
 public class EnemyFireBallController : MonoBehaviour
 {
     [SerializeField] float lifeTime = 3f;
+
+    [Header("Damage")]
+    [SerializeField] private int EnemyCasterSkillDamage = 5;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,4 +19,26 @@ public class EnemyFireBallController : MonoBehaviour
     {
         
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject collisionObject = collision.gameObject;
+        if (collision != null)
+        {
+            if (collisionObject.CompareTag("PlayerTag"))
+            {
+                Player playerComponent = collisionObject.GetComponent<Player>();
+                playerComponent.PlayerUpdateHealth(-EnemyCasterSkillDamage);
+                //add sound and shit
+            }
+        }
+        Destroy(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        Debug.Log(this + "destroyed");
+
+    }
+
 }

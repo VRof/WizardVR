@@ -25,13 +25,13 @@ public class Bar : MonoBehaviour
     public void UpdateHealthBar(float maxHealth, float currentHealth, float addedHealth)
     {
         target = currentHealth / maxHealth;
-        healthValue.text = $"{currentHealth:F1}/{maxHealth:F0}";
+        healthValue.text = $"{currentHealth:F0}/{maxHealth:F0}";
         addedHealthValue.text = addedHealthValue != null ? (addedHealth != 0 ? $"+{addedHealth:F0}" : "") : "";
     }
     public void UpdateManaBar(float maxMana, float currentMana, float addedMana)
     {
         target = currentMana / maxMana;
-        manaValue.text = $"{currentMana:F1}/{maxMana:F0}";
+        manaValue.text = $"{currentMana:F0}/{maxMana:F0}";
         addedManaValue.text = addedManaValue != null ? (addedMana != 0 ? $"+{addedMana:F0}" : "") : "";
     }
 }

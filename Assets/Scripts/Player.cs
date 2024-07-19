@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -9,66 +7,65 @@ public class Player : MonoBehaviour
     [SerializeField] private float maxMana = 100;
     private float currentHealth;
     private float currentMana;
-    private float addedHealth;
-    private float addedMana;
+    //private float addedHealth;
+    [SerializeField] private int ManaRegenerationAmount = 5;
     [SerializeField] private Bar healthBar;
     [SerializeField] private Bar manaBar;
+
+
+
     void Start()
     {
-        addedHealth = 0;
-        addedMana = 1;
         currentHealth = maxHealth;
-        currentMana = maxMana;
+        currentMana = 10;
+        healthBar.UpdateHealthBar(maxHealth, currentHealth, 0);
+        manaBar.UpdateManaBar(maxMana, currentMana, ManaRegenerationAmount);
 
-        healthBar.UpdateHealthBar(maxHealth, currentHealth, addedHealth);
-        manaBar.UpdateManaBar(maxMana, currentMana, addedMana);
+        StartCoroutine(RegenerateMana());
     }
 
     void Update()
     {
-        if (currentHealth > 0)
+
+    }
+
+    private IEnumerator RegenerateMana() {
+        while (true)
         {
-            //PlayerTakeDamage(0.1f);
-            //PlayerUseMana(1);
+            yield return new WaitForSeconds(1);
+            PlayerUpdateMana(ManaRegenerationAmount);
+        }
+    }
 
-            AddHealth(addedHealth);
-            currentHealth = currentHealth > maxHealth ? maxHealth : currentHealth;
-            currentHealth = currentHealth < 0 ? 0 : currentHealth;
-            healthBar.UpdateHealthBar(maxHealth, currentHealth, addedHealth);
+    public void PlayerUpdateHealth(float amount)
+    {
 
-            AddMana(addedMana);
-            currentMana = currentMana > maxMana ? maxMana : currentMana;
-            currentMana = currentMana < 0 ? 0 : currentMana;
-            manaBar.UpdateManaBar(maxMana, currentMana, addedMana);
+        currentHealth += amount;
+        if (currentHealth <= 0)
+        {
+            healthBar.UpdateHealthBar(maxHealth, 0, 0);
+            PlayerDie();
         }
         else
         {
-            healthBar.UpdateHealthBar(maxHealth, currentHealth, addedHealth);
-            PlayerDie();
+            currentHealth = currentHealth > maxHealth ? maxHealth : currentHealth;
+            currentHealth = currentHealth < 0 ? 0 : currentHealth;
+            healthBar.UpdateHealthBar(maxHealth, currentHealth, 0);
         }
     }
-
-    public void PlayerTakeDamage(float damageAmount)
+    public void PlayerUpdateMana(float manaAmount)
     {
-        currentHealth -= damageAmount;
-    }
-    public void PlayerUseMana(float manaAmount)
-    {
-        currentMana -= manaAmount;
+        currentMana += manaAmount;
+        currentMana = currentMana > maxMana ? maxMana : currentMana;
+        currentMana = currentMana < 0 ? 0 : currentMana;
+        manaBar.UpdateManaBar(maxMana, currentMana, ManaRegenerationAmount);
     }
 
-    public void AddHealth(float health)
-    {
-        currentHealth += health;
-    }
-
-    public void AddMana(float mana)
-    {
-        currentMana += mana;
-    }
-
+    
+    
     private void PlayerDie()
     {
 
     }
+
 }

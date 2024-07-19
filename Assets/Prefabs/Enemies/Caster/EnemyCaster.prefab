@@ -71,19 +71,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   skillToCast: {fileID: 166258, guid: e8a107ae5c8c1d648ac84743acfdda6d, type: 3}
-  EnemyCasterCastPoint: {fileID: 6966807828329679830}
+  enemyCasterCastPoint: {fileID: 0}
   detectionRange: 30
   attackRange: 20
   attackCooldown: 2.5
   wanderRadius: 7
   minWanderWaitTime: 2
   maxWanderWaitTime: 5
-  sphereCastRadius: 0.3
+  sphereCastRadius: 0.25
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 0
-  visualizeSphereCast: 0
-  sphereCastColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!136 &9159008606396884623
 CapsuleCollider:
   m_ObjectHideFlags: 0
