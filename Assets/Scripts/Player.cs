@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     private float currentMana;
     //private float addedHealth;
     [SerializeField] private int ManaRegenerationAmount = 5;
+    [SerializeField] private int HealthRegenerationAmount = 0;
     [SerializeField] private Bar healthBar;
     [SerializeField] private Bar manaBar;
 
@@ -18,10 +19,10 @@ public class Player : MonoBehaviour
     {
         currentHealth = maxHealth;
         currentMana = 10;
-        healthBar.UpdateHealthBar(maxHealth, currentHealth, 0);
+        healthBar.UpdateHealthBar(maxHealth, currentHealth, HealthRegenerationAmount);
         manaBar.UpdateManaBar(maxMana, currentMana, ManaRegenerationAmount);
 
-        StartCoroutine(RegenerateMana());
+        StartCoroutine(RegenerateRoutine());
     }
 
     void Update()
@@ -29,11 +30,13 @@ public class Player : MonoBehaviour
 
     }
 
-    private IEnumerator RegenerateMana() {
+    private IEnumerator RegenerateRoutine() {
         while (true)
         {
             yield return new WaitForSeconds(1);
             PlayerUpdateMana(ManaRegenerationAmount);
+            PlayerUpdateHealth(HealthRegenerationAmount);
+
         }
     }
 
@@ -50,7 +53,7 @@ public class Player : MonoBehaviour
         {
             currentHealth = currentHealth > maxHealth ? maxHealth : currentHealth;
             currentHealth = currentHealth < 0 ? 0 : currentHealth;
-            healthBar.UpdateHealthBar(maxHealth, currentHealth, 0);
+            healthBar.UpdateHealthBar(maxHealth, currentHealth, HealthRegenerationAmount);
         }
     }
     public void PlayerUpdateMana(float manaAmount)
@@ -61,7 +64,9 @@ public class Player : MonoBehaviour
         manaBar.UpdateManaBar(maxMana, currentMana, ManaRegenerationAmount);
     }
 
-    
+    public void PlayerUpdateRegenerationSpeed(float amount) {
+        HealthRegenerationAmount = (int)amount;
+    }
     
     private void PlayerDie()
     {

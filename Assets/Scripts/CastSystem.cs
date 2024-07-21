@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,101 +25,189 @@ public class CastSystem : MonoBehaviour
 
     [SerializeField] LayerMask groundLayer;// Layer mask to filter ground objects
     [SerializeField] LayerMask worldLayer;
+    [SerializeField] GameObject PredictionMenuCanvas;
+
+    [Header("Debug info")]
+    [SerializeField] bool debug = false;
+    [SerializeField] TMP_Text PredictionTextField;
 
     GameObject currentSkill;
+    TMP_Dropdown PredictionsDropdown;
+    bool isPaused = false;
     //// Update is called once per frame
 
-    //void Update()
-    //{
+    void Update()
+    {
 
+    }
 
-    //}
+    private void Start()
+    {
+        if (debug && PredictionTextField != null) {
+            PredictionTextField.text = "['fireball 0.00%', 'frostbeam 0.00%', 'heal 0.00%', 'meteor 0.00%', 'others 0.00%', 'shield 0.00%', 'summon 0.00%', 'teleport 0.00%']";
+        }
+        PredictionsDropdown = PredictionMenuCanvas.GetComponentInChildren<TMP_Dropdown>();
+        PredictionsDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
 
-    public void PrepareSkill(string SpellName)
+    }
+
+    public void PrepareSkill(string PredictionArray)
     {
         Draw.syncContext.Post(_ => // This code here will run on the main thread
         {
-            Debug.Log(SpellName);
-
-            //if(currentSkill != null)
-            //        Destroy(currentSkill);
-            switch (SpellName)
+            Debug.Log(PredictionArray);
+            if(PredictionTextField && debug) PredictionTextField.text = PredictionArray;
+            Dictionary<string, float> skillDict  = ParseSkillString(PredictionArray);
+            var maxSkill = skillDict.Aggregate((l, r) => l.Value > r.Value ? l : r);
+            var maxValue = maxSkill.Value;
+            var maxSkillName = maxSkill.Key;
+            if (maxValue > 90)
             {
-                case "fireball":
-                    //currentSkill = Instantiate(FireBallPrefab, Tip.transform.position, Tip.transform.rotation);
-                    Instantiate(FireBallPrefab, Tip.transform.position, Tip.transform.rotation);
-                    break;
-                case "frostbolt":
-                    //currentSkill = Instantiate(FrostBallPrefab, Tip.transform.position, Tip.transform.rotation);
-                    Instantiate(FrostBeamPrefab, Tip.transform.position, Tip.transform.rotation);
-                    break;
-                case "meteor":
-                    //currentSkill = Instantiate(MeteorPrefab, new Vector3(Player.transform.position.x,Player.transform.position.y+1,Player.transform.position.z), Player.transform.rotation);
-                    GameObject spawnPoint = GameObject.Find("MeteorSpawnPoint");
-                    GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
-                    meteor.transform.position += new Vector3(0, 3, 0);
-                    break;
-                case "heal":
-                    Instantiate(HealPrefab, new Vector3(PlayerModel.transform.position.x, PlayerModel.transform.position.y - 2 * PlayerModel.transform.localScale.y, PlayerModel.transform.position.z), PlayerModel.transform.rotation);
-                    break;
-                case "shield":
-                    Instantiate(ShieldPrefab, new Vector3(PlayerModel.transform.position.x, PlayerModel.transform.position.y - 2 * PlayerModel.transform.localScale.y, PlayerModel.transform.position.z), PlayerModel.transform.rotation);
-                    break;
-                case "summon":
-                    spawnPoint = GameObject.Find("MeteorSpawnPoint");
-                    float raycastHeight = 100f; // Height from which to cast the ray
-                                                // Start the raycast from high above the ground
-                    Vector3 rayOrigin = new Vector3(spawnPoint.transform.position.x, raycastHeight, spawnPoint.transform.position.z);
-                    //GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
-                    // Cast the ray downwards
-                    if (!Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, Mathf.Infinity, worldLayer))
-                    {
-                        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
-                        {
-                            // Get the position where the ray hit the ground
-                            Vector3 spawnPosition = hit.point;
-                            // Instantiate the object at the hit point
-                            Instantiate(SummonPrefab, spawnPosition, Quaternion.identity);
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("summon" + "No ground found at position: " + spawnPoint.transform.position);
-                    }
-                    break;
-                case "teleport":
-                    spawnPoint = GameObject.Find("MeteorSpawnPoint");
-                    raycastHeight = 100f; // Height from which to cast the ray
-                                          // Start the raycast from high above the ground
-                    rayOrigin = new Vector3(spawnPoint.transform.position.x+Tip.transform.forward.x*2, raycastHeight, spawnPoint.transform.position.z + Tip.transform.forward.z * 2);
-                    //GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
-                    // Cast the ray downwards
-                    if (!Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, worldLayer))
-                    {
-                        if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
-                        {
-                            // Get the position where the ray hit the ground
-                            Vector3 spawnPosition = hit.point;
-                            // Instantiate the object at the hit point
-                            if (CanPlaceExitPortal()) {
-                            GameObject portalEnter = Instantiate(PortalEnterPrefab, spawnPosition, new Quaternion(0, Tip.transform.rotation.y, 0, Tip.transform.rotation.w));
-                            portalEnter.transform.position += new Vector3(0, 1, 0);
-                                portalEnter.name = "PortalEnter";
-                        }
-
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("teleport" + "No ground found at position: " + spawnPoint.transform.position);
-                    }
-                    break;
-                default:
-                    break;
+                Cast(maxSkillName);
             }
-            
+            else {
+                PredictionsDropdown.ClearOptions();
+                List<string> optionsList = new List<string>();
+                foreach (var skill in skillDict) {
+                    optionsList.Add(skill.Key + ": " + skill.Value);
+                }
+                PredictionsDropdown.AddOptions(optionsList);
+                Pause();
+            }
+
         }, null);
         
+    }
+
+    public void Resume()
+    {
+        PredictionMenuCanvas.SetActive(false); // Hide the custom menu
+        Time.timeScale = 1f; // Resume the game
+        isPaused = false;
+    }
+
+    void Pause()
+    {
+        PredictionMenuCanvas.SetActive(true); // Show the custom menu
+        Time.timeScale = 0f; // Pause the game
+        //PredictionsDropdown.Show();
+        Draw drawScript = gameObject.GetComponent<Draw>(); 
+        drawScript.enabled = false;
+    }
+
+    public void OnDropdownValueChanged(int index) {
+        
+    }
+    private void Cast(string maxSkillName)
+    {
+        switch (maxSkillName)
+        {
+            case "fireball":
+                //currentSkill = Instantiate(FireBallPrefab, Tip.transform.position, Tip.transform.rotation);
+                Instantiate(FireBallPrefab, Tip.transform.position, Tip.transform.rotation);
+                break;
+            case "frostbeam":
+                //currentSkill = Instantiate(FrostBallPrefab, Tip.transform.position, Tip.transform.rotation);
+                Instantiate(FrostBeamPrefab, Tip.transform.position, Tip.transform.rotation);
+                break;
+            case "meteor":
+                //currentSkill = Instantiate(MeteorPrefab, new Vector3(Player.transform.position.x,Player.transform.position.y+1,Player.transform.position.z), Player.transform.rotation);
+                GameObject spawnPoint = GameObject.Find("MeteorSpawnPoint");
+                GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
+                meteor.transform.position += new Vector3(0, 3, 0);
+                break;
+            case "heal":
+                Instantiate(HealPrefab, new Vector3(PlayerModel.transform.position.x, PlayerModel.transform.position.y - 2 * PlayerModel.transform.localScale.y, PlayerModel.transform.position.z), PlayerModel.transform.rotation);
+                break;
+            case "shield":
+                Instantiate(ShieldPrefab, new Vector3(PlayerModel.transform.position.x, PlayerModel.transform.position.y - 2 * PlayerModel.transform.localScale.y, PlayerModel.transform.position.z), PlayerModel.transform.rotation);
+                break;
+            case "summon":
+                spawnPoint = GameObject.Find("MeteorSpawnPoint");
+                float raycastHeight = 100f; // Height from which to cast the ray
+                                            // Start the raycast from high above the ground
+                Vector3 rayOrigin = new Vector3(spawnPoint.transform.position.x, raycastHeight, spawnPoint.transform.position.z);
+                //GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
+                // Cast the ray downwards
+                if (!Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, Mathf.Infinity, worldLayer))
+                {
+                    if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
+                    {
+                        // Get the position where the ray hit the ground
+                        Vector3 spawnPosition = hit.point;
+                        // Instantiate the object at the hit point
+                        Instantiate(SummonPrefab, spawnPosition, Quaternion.identity);
+                    }
+                }
+                else
+                {
+                    Debug.Log("summon" + "No ground found at position: " + spawnPoint.transform.position);
+                }
+                break;
+            case "teleport":
+                spawnPoint = GameObject.Find("MeteorSpawnPoint");
+                raycastHeight = 100f; // Height from which to cast the ray
+                                      // Start the raycast from high above the ground
+                rayOrigin = new Vector3(spawnPoint.transform.position.x + Tip.transform.forward.x * 2, raycastHeight, spawnPoint.transform.position.z + Tip.transform.forward.z * 2);
+                //GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
+                // Cast the ray downwards
+                if (!Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, worldLayer))
+                {
+                    if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
+                    {
+                        // Get the position where the ray hit the ground
+                        Vector3 spawnPosition = hit.point;
+                        // Instantiate the object at the hit point
+                        if (CanPlaceExitPortal())
+                        {
+                            GameObject portalEnter = Instantiate(PortalEnterPrefab, spawnPosition, new Quaternion(0, Tip.transform.rotation.y, 0, Tip.transform.rotation.w));
+                            portalEnter.transform.position += new Vector3(0, 1, 0);
+                            portalEnter.name = "PortalEnter";
+                        }
+
+                    }
+                }
+                else
+                {
+                    Debug.Log("teleport" + "No ground found at position: " + spawnPoint.transform.position);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public static Dictionary<string, float> ParseSkillString(string skillString)
+    {
+        // Remove the outer brackets and single quotes
+        skillString = skillString.Trim('[', ']', '\'');
+
+        // Split the string into individual skill entries
+        string[] skillEntries = skillString.Split(new string[] { "', '" }, StringSplitOptions.RemoveEmptyEntries);
+
+        // Create a dictionary to store the parsed skills and their percentages
+        Dictionary<string, float> skillDict = new Dictionary<string, float>();
+
+        // Regex pattern to extract the skill name and percentage
+        string pattern = @"^(?<name>\w+)\s(?<value>\d+\.\d+)%$";
+        Regex regex = new Regex(pattern);
+
+        foreach (string entry in skillEntries)
+        {
+            Match match = regex.Match(entry);
+            if (match.Success)
+            {
+                string name = match.Groups["name"].Value;
+                float value = float.Parse(match.Groups["value"].Value);
+                skillDict[name] = value;
+            }
+            else
+            {
+                Console.WriteLine($"Failed to parse entry: {entry}");
+            }
+        }
+
+        return skillDict;
     }
     private bool CanPlaceExitPortal() {
 

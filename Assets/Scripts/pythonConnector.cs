@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using Unity.VisualScripting;
 using System.Collections;
+using TMPro;
 
 
 public class pythonConnector : MonoBehaviour

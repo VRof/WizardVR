@@ -25,8 +25,8 @@ def create_model(num_classes):
         GlobalAveragePooling2D(),
         Dense(128, activation='relu'),
         Dropout(0.5),
-        Dense(64, activation='relu'),
-        Dropout(0.2),
+        # Dense(64, activation='relu'),
+        # Dropout(0.2),
         Dense(num_classes, activation='softmax')
     ])
     
@@ -122,10 +122,11 @@ def predict_skill(model, image, class_names):
     
     image = image.astype('float32') / 255
     prediction = model.predict(image)[0]
-    predicted_skill_index = np.argmax(prediction)
-    confidence = prediction[predicted_skill_index]
-    predicted_skill_name = class_names[predicted_skill_index]
-    return predicted_skill_name, confidence
+    return prediction
+    # predicted_skill_index = np.argmax(prediction)
+    # confidence = prediction[predicted_skill_index]
+    # predicted_skill_name = class_names[predicted_skill_index]
+    # return predicted_skill_name, confidence
 
 @tf.function
 def train_step(model, images, labels):
@@ -158,7 +159,7 @@ if __name__ == "__main__":
     base_path = os.path.join(model_dir,"spell_recognition_model.h5")
     model_save_path = base_path  # Path to save the model
 
-    class_names = np.array(['fireball', 'frostbolt', 'heal', 'meteor', 'others', 'shield', 'summon', 'teleport'])
+    class_names = np.array(['fireball', 'frostbeam', 'heal', 'meteor', 'others', 'shield', 'summon', 'teleport'])
 
     # Load the model
     loaded_model = load_saved_model(model_save_path)
@@ -180,18 +181,18 @@ if __name__ == "__main__":
                 # Convert received data to PIL Image
                 drawn_image = Image.open(io.BytesIO(received_data))
                 
-                # Resize the image to 128x128 if it's not already
-                #drawn_image = drawn_image.resize((128, 128))
                 
-                predicted_skill, confidence = predict_skill(loaded_model, drawn_image, class_names)
-                print(f"Predicted skill: {predicted_skill}")
-                print(f"Confidence: {confidence}")
-                
-                if confidence > 0.90 and predicted_skill != "others":
-                    sock.sendall(predicted_skill.encode("UTF-8"))  # send to unity
-                    #update
-                else:
-                    sock.sendall("not recognized".encode("UTF-8"))
+                # predicted_skill, confidence = predict_skill(loaded_model, drawn_image, class_names)
+                # print(f"Predicted skill: {predicted_skill}")
+                # print(f"Confidence: {confidence}")
+
+                prediction_array = predict_skill(loaded_model, drawn_image, class_names)*100
+                sock.sendall(str([f"{name:} {value:.2f}%" for name,value in zip(class_names ,prediction_array)]).encode("UTF-8"))
+                # if confidence > 0.90 and predicted_skill != "others":
+                #     sock.sendall(predicted_skill.encode("UTF-8"))  # send to unity
+                #     #update
+                # else:
+                #     sock.sendall("not recognized".encode("UTF-8"))
             except Exception as e:
                 print(f"Error during prediction: {e}")
                 sock.sendall(f"Error during prediction: {e}".encode("UTF-8"))
