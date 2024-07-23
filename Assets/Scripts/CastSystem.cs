@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
+using UnityEngine.Windows;
 
 public class CastSystem : MonoBehaviour
 {
@@ -26,6 +29,7 @@ public class CastSystem : MonoBehaviour
     [SerializeField] LayerMask groundLayer;// Layer mask to filter ground objects
     [SerializeField] LayerMask worldLayer;
     [SerializeField] GameObject PredictionMenuCanvas;
+    [SerializeField] GameObject rayInteractor;
 
     [Header("Debug info")]
     [SerializeField] bool debug = false;
@@ -47,8 +51,6 @@ public class CastSystem : MonoBehaviour
             PredictionTextField.text = "['fireball 0.00%', 'frostbeam 0.00%', 'heal 0.00%', 'meteor 0.00%', 'others 0.00%', 'shield 0.00%', 'summon 0.00%', 'teleport 0.00%']";
         }
         PredictionsDropdown = PredictionMenuCanvas.GetComponentInChildren<TMP_Dropdown>();
-        PredictionsDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
-
     }
 
     public void PrepareSkill(string PredictionArray)
@@ -66,12 +68,15 @@ public class CastSystem : MonoBehaviour
                 Cast(maxSkillName);
             }
             else {
+
                 PredictionsDropdown.ClearOptions();
                 List<string> optionsList = new List<string>();
-                foreach (var skill in skillDict) {
+                foreach (var skill in skillDict.OrderByDescending(skill => skill.Value))
+                {
                     optionsList.Add(skill.Key + ": " + skill.Value);
                 }
                 PredictionsDropdown.AddOptions(optionsList);
+                PredictionsDropdown.RefreshShownValue();
                 Pause();
             }
 
@@ -81,23 +86,38 @@ public class CastSystem : MonoBehaviour
 
     public void Resume()
     {
+        rayInteractor.SetActive(false);
         PredictionMenuCanvas.SetActive(false); // Hide the custom menu
+        Draw drawScript = gameObject.GetComponent<Draw>();
+        drawScript.enabled = true;
         Time.timeScale = 1f; // Resume the game
         isPaused = false;
     }
 
     void Pause()
     {
+        Draw drawScript = gameObject.GetComponent<Draw>();
+        drawScript.enabled = false;
+        rayInteractor.SetActive(true);
         PredictionMenuCanvas.SetActive(true); // Show the custom menu
         Time.timeScale = 0f; // Pause the game
+        isPaused = true;
         //PredictionsDropdown.Show();
-        Draw drawScript = gameObject.GetComponent<Draw>(); 
-        drawScript.enabled = false;
+
     }
 
-    public void OnDropdownValueChanged(int index) {
-        
+    public void okButtonHandler() {
+        string selectedValue = PredictionsDropdown.options[PredictionsDropdown.value].text;
+        int colonIndex = selectedValue.IndexOf(':');
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes(selectedValue.Substring(0, colonIndex)));
+        Resume();
     }
+
+    public void closeButtonHandler() {
+    
+    Resume();
+    }
+
     private void Cast(string maxSkillName)
     {
         switch (maxSkillName)

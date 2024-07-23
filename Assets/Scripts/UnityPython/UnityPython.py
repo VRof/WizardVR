@@ -1,4 +1,6 @@
+from collections import deque
 import io
+import random
 import socket
 import sys
 import numpy as np
@@ -13,104 +15,37 @@ from sklearn.model_selection import train_test_split
 from PIL import Image
 
 # Define the model
-def create_model(num_classes):
-    model = Sequential([
-        Conv2D(32, (3, 3), activation='relu', input_shape=(128, 128, 1)),
-        MaxPooling2D((2, 2)),
-        Conv2D(64, (3, 3), activation='relu'),
-        MaxPooling2D((2, 2)),
-        Conv2D(64, (3, 3), activation='relu'),
-        MaxPooling2D((2, 2)),
-        Conv2D(128, (3, 3), activation='relu'),
-        GlobalAveragePooling2D(),
-        Dense(128, activation='relu'),
-        Dropout(0.5),
-        # Dense(64, activation='relu'),
-        # Dropout(0.2),
-        Dense(num_classes, activation='softmax')
-    ])
+# def create_model(num_classes):
+#     model = Sequential([
+#         Conv2D(32, (3, 3), activation='relu', input_shape=(128, 128, 1)),
+#         MaxPooling2D((2, 2)),
+#         Conv2D(64, (3, 3), activation='relu'),
+#         MaxPooling2D((2, 2)),
+#         Conv2D(64, (3, 3), activation='relu'),
+#         MaxPooling2D((2, 2)),
+#         Conv2D(128, (3, 3), activation='relu'),
+#         GlobalAveragePooling2D(),
+#         Dense(128, activation='relu'),
+#         Dropout(0.5),
+#         Dense(64, activation='relu'),
+#         Dropout(0.2),
+#         Dense(num_classes, activation='softmax')
+#     ])
     
-    model.compile(optimizer=Adam(learning_rate=0.0001),
-                  loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+#     model.compile(optimizer=Adam(learning_rate=0.001),
+#                   loss='categorical_crossentropy',
+#                   metrics=['accuracy'])
     
-    return model
-
-# # Load images and labels from directories
-# def load_data(base_path):
-#     images = []
-#     labels = []
-#     class_names = []
-    
-#     for class_index, class_name in enumerate(sorted(os.listdir(base_path))):
-#         class_path = os.path.join(base_path, class_name)
-#         if os.path.isdir(class_path):
-#             class_names.append(class_name)
-#             for image_name in os.listdir(class_path):
-#                 image_path = os.path.join(class_path, image_name)
-#                 try:
-#                     image = Image.open(image_path).convert('L')  # Convert to grayscale
-#                     image = image.resize((128, 128))
-#                     image = np.array(image)
-#                     images.append(image)
-#                     labels.append(len(class_names) - 1)  # Use the current length of class_names as the label
-#                 except Exception as e:
-#                     print(f"Error loading image {image_path}: {e}")
-    
-#     return np.array(images), np.array(labels), class_names
-
-# Train and save the model
-def train_and_save_model(images, labels, class_names, model_save_path):
-    # Convert labels to categorical
-    num_classes = len(class_names)
-    labels_categorical = to_categorical(labels, num_classes=num_classes)
-
-    # Split the data into training and validation sets
-    X_train, X_val, y_train, y_val = train_test_split(images, labels_categorical, test_size=0.2, random_state=42)
-
-    # Normalize the data
-    X_train = X_train.reshape(X_train.shape[0], 128, 128, 1).astype('float32') / 255
-    X_val = X_val.reshape(X_val.shape[0], 128, 128, 1).astype('float32') / 255
-
-    # Initialize the model
-    model = create_model(num_classes)
-
-    # Data augmentation for training
-    datagen = ImageDataGenerator(
-        rotation_range=10,
-        width_shift_range=0.1,
-        height_shift_range=0.1,
-        zoom_range=0.1,
-        horizontal_flip=False,
-        vertical_flip=False
-    )
-
-    # Train the model
-    batch_size = 32
-    epochs = 50
-
-    history = model.fit(
-        datagen.flow(X_train, y_train, batch_size=batch_size),
-        steps_per_epoch=len(X_train) // batch_size,
-        epochs=epochs,
-        validation_data=(X_val, y_val)
-    )
-
-    # Save the model
-    model.save(model_save_path)
-    print(f"Model saved to {model_save_path}")
-
-    return model, history
+#     return model
 
 # Function to load the model
 def load_saved_model(model_path):
     model = tf.keras.models.load_model(model_path)
-    model.compile(optimizer=Adam(learning_rate=0.0001),
+    model.compile(optimizer=Adam(learning_rate=0.001),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
     return model
 
-# Function to predict the skill
 def predict_skill(model, image, class_names):
     if isinstance(image, Image.Image):
         # Convert PIL Image to numpy array
@@ -122,36 +57,151 @@ def predict_skill(model, image, class_names):
     
     image = image.astype('float32') / 255
     prediction = model.predict(image)[0]
-    return prediction
-    # predicted_skill_index = np.argmax(prediction)
-    # confidence = prediction[predicted_skill_index]
-    # predicted_skill_name = class_names[predicted_skill_index]
-    # return predicted_skill_name, confidence
+    predicted_skill_index = np.argmax(prediction)
+    confidence = prediction[predicted_skill_index]
+    predicted_skill_name = class_names[predicted_skill_index]
+    return predicted_skill_name, confidence, prediction
 
 @tf.function
 def train_step(model, images, labels):
     with tf.GradientTape() as tape:
         predictions = model(images, training=True)
         loss = tf.keras.losses.categorical_crossentropy(labels, predictions)
+        # Sum the loss over the batch size
+        loss = tf.reduce_mean(loss)
     gradients = tape.gradient(loss, model.trainable_variables)
     model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     return loss
 
-def update_model(model, image, skill_index, class_names):
-    # Preprocess the image
-    image = image.reshape(1, 128, 128, 1).astype('float32') / 255
-    
-    # Create a one-hot encoded label
-    label = np.zeros((1, len(class_names)))
-    label[0, skill_index] = 1
-    
-    # Convert to tensors
-    image_tensor = tf.convert_to_tensor(image)
-    label_tensor = tf.convert_to_tensor(label)
-    
-    # Update the model
+
+
+class ClassBuffer:
+    def __init__(self, buffer_size=100, player_preference=0.7):
+        self.buffer = deque(maxlen=buffer_size)
+        self.player_preference = player_preference
+
+    def add(self, image, is_player=False):
+        self.buffer.append((image, is_player))
+
+    def sample(self, num_samples):
+        if len(self.buffer) == 0:
+            return []
+
+        # Calculate weights based on position and player flag
+        weights = []
+        for i, (_, is_player) in enumerate(self.buffer):
+            weight = (i + 1) / len(self.buffer)  # Position weight
+            if is_player:
+                weight *= self.player_preference
+            weights.append(weight)
+
+        # Normalize weights
+        total_weight = sum(weights)
+        normalized_weights = [w / total_weight for w in weights]
+
+        # Perform weighted sampling
+        sampled_indices = random.choices(range(len(self.buffer)), 
+                                         weights=normalized_weights, 
+                                         k=min(num_samples, len(self.buffer)))
+        
+        return [self.buffer[i] for i in sampled_indices]
+
+class MultiClassBuffer:
+    def __init__(self, class_names, buffer_size=100, player_preference=0.7):
+        self.class_names = list(class_names)
+        self.class_buffers = {name: ClassBuffer(buffer_size, player_preference) for name in self.class_names}
+
+    def add(self, image, class_name, is_player=False):
+        if class_name in self.class_buffers:
+            self.class_buffers[class_name].add(image, is_player)
+        else:
+            print(f"Warning: Unknown class '{class_name}'")
+
+    def sample(self, batch_size):
+        samples_per_class = batch_size // len(self.class_names)
+        remainder = batch_size % len(self.class_names)
+
+        samples = []
+        for class_name in self.class_names:
+            class_samples = self.class_buffers[class_name].sample(samples_per_class)
+            samples.extend((image, self.class_names.index(class_name), is_player) 
+                           for image, is_player in class_samples)
+
+        # Distribute remainder samples
+        for i in range(remainder):
+            class_name = self.class_names[i]
+            extra_sample = self.class_buffers[class_name].sample(1)
+            if extra_sample:
+                samples.append((extra_sample[0][0], self.class_names.index(class_name), extra_sample[0][1]))
+
+        random.shuffle(samples)
+        return samples
+
+def load_image(image_path):
+    try:
+        with Image.open(image_path) as img:
+            return img.convert('RGB')
+    except Exception as e:
+        print(f"Error loading {image_path}: {str(e)}")
+        return None
+
+
+def load_initial_buffer(buffer, folder_name='BufferImages'):
+    # Get the directory where the script is located
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Construct the path to the BufferImages folder
+    base_path = os.path.join(script_dir, folder_name)
+    for class_name in buffer.class_names:
+        print(class_name)
+        class_path = os.path.join(base_path, class_name)
+        if os.path.exists(class_path):
+            for file_name in os.listdir(class_path):
+                if file_name.lower().endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif')):
+                    image_path = os.path.join(class_path, file_name)
+                    image = load_image(image_path)
+                    if image:
+                        buffer.add(image, class_name, is_player=False)
+        else:
+            print(f"Warning: Path not found for class {class_name} at {class_path}")
+
+def preprocess_image(image):
+    if not isinstance(image, Image.Image):
+        raise ValueError("Input must be a PIL Image object")
+    image = image.convert('L')  # Convert to grayscale
+    image = image.resize((128, 128))  # Resize to match model input
+    image_array = np.array(image).reshape(1, 128, 128, 1)
+    return image_array.astype('float32') / 255
+
+def update_model_with_buffer(model, buffer, batch_size, class_names):
+    samples = buffer.sample(batch_size)
+    images = []
+    labels = []
+
+    for image, class_index, _ in samples:
+        preprocessed_image = preprocess_image(image)
+        images.append(preprocessed_image)
+        label = np.zeros((1, len(class_names)))
+        label[0, class_index] = 1
+        labels.append(label)
+
+    images = np.vstack(images)
+    labels = np.vstack(labels)
+
+    image_tensor = tf.convert_to_tensor(images, dtype=tf.float32)
+    label_tensor = tf.convert_to_tensor(labels, dtype=tf.float32)
+
     loss = train_step(model, image_tensor, label_tensor)
     return loss
+
+def update_model(model, buffer, image, class_name, batch_size=32):
+    if isinstance(image, str):
+        image = load_image(image)
+    if image is not None:
+        buffer.add(image, class_name, is_player=True)
+        return update_model_with_buffer(model, buffer, batch_size, buffer.class_names)
+    else:
+        print(f"Failed to add image for class {class_name}")
+        return None
 
 # Main execution
 if __name__ == "__main__":
@@ -159,10 +209,15 @@ if __name__ == "__main__":
     base_path = os.path.join(model_dir,"spell_recognition_model.h5")
     model_save_path = base_path  # Path to save the model
 
-    class_names = np.array(['fireball', 'frostbeam', 'heal', 'meteor', 'others', 'shield', 'summon', 'teleport'])
+    class_names = ['fireball', 'frostbeam', 'heal', 'meteor', 'others', 'shield', 'summon', 'teleport']
 
     # Load the model
     loaded_model = load_saved_model(model_save_path)
+
+    buffer_size = 100
+    player_preference = 0.7  # preference for player images
+    buffer = MultiClassBuffer(class_names, buffer_size,player_preference)    # Load initial images from folders
+    load_initial_buffer(buffer)
 
     try:
         host, port = "127.0.0.1", 25001
@@ -180,22 +235,26 @@ if __name__ == "__main__":
             try:
                 # Convert received data to PIL Image
                 drawn_image = Image.open(io.BytesIO(received_data))
-                
-                
-                # predicted_skill, confidence = predict_skill(loaded_model, drawn_image, class_names)
-                # print(f"Predicted skill: {predicted_skill}")
-                # print(f"Confidence: {confidence}")
+            
+                predicted_skill, confidence, prediction_array  = predict_skill(loaded_model, drawn_image, class_names)
+                prediction_array = prediction_array*100;
+                print(f"Predicted skill: {predicted_skill}")
+                print(f"Confidence: {confidence}")
 
-                prediction_array = predict_skill(loaded_model, drawn_image, class_names)*100
-                sock.sendall(str([f"{name:} {value:.2f}%" for name,value in zip(class_names ,prediction_array)]).encode("UTF-8"))
-                # if confidence > 0.90 and predicted_skill != "others":
-                #     sock.sendall(predicted_skill.encode("UTF-8"))  # send to unity
-                #     #update
-                # else:
-                #     sock.sendall("not recognized".encode("UTF-8"))
-            except Exception as e:
-                print(f"Error during prediction: {e}")
-                sock.sendall(f"Error during prediction: {e}".encode("UTF-8"))
+                sock.sendall(str([f"{name:} {value:.2f}%" for name,value in zip(class_names ,prediction_array)]).encode("UTF-8"))# send to unity
+                if predicted_skill != "others":
+                    if confidence > 0.95:
+                        buffer.add(drawn_image, predicted_skill, is_player=True)
+                    if confidence > 0.90 and confidence < 0.95:
+                        loss = update_model(loaded_model, buffer, drawn_image, predicted_skill)
+            except: #if not image then it text
+                label_from_user = received_data.decode('utf-8')
+                loss = update_model(loaded_model, buffer, drawn_image, label_from_user)
+                sock.sendall("Model updated".encode("UTF-8"))
+                
+            # except Exception as e:
+            #     print(f"Error during prediction: {e}")
+            #     sock.sendall(f"Error during prediction: {e}".encode("UTF-8"))
                 # Don't exit here, continue the loop
 
 

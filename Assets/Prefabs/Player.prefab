@@ -111,6 +111,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   PredictionMenuCanvas: {fileID: 0}
+  rayInteractor: {fileID: 0}
   debug: 0
   PredictionTextField: {fileID: 0}
 --- !u!1 &1954622361805108975
