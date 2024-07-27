@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,6 +8,7 @@ public class SceneTransitionManager : MonoBehaviour
 {
     public FadeScreen fadeScreen;
     public static SceneTransitionManager singleton;
+    public static int Index;
 
     private void Awake()
     {
@@ -33,22 +35,20 @@ public class SceneTransitionManager : MonoBehaviour
     public void GoToSceneAsync(int sceneIndex)
     {
         StartCoroutine(GoToSceneAsyncRoutine(sceneIndex));
+        Index = sceneIndex;
     }
 
     IEnumerator GoToSceneAsyncRoutine(int sceneIndex)
     {
-        fadeScreen.FadeOut();
+        yield return StartCoroutine(fadeScreen.FadeRoutine(0, 1));
         //Launch the new scene
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
-        operation.allowSceneActivation = false;
 
         float timer = 0;
-        while(timer <= fadeScreen.fadeDuration && !operation.isDone)
+        while((timer <= fadeScreen.fadeDuration && !operation.isDone) || !operation.isDone)
         {
             timer += Time.deltaTime;
             yield return null;
         }
-
-        operation.allowSceneActivation = true;
     }
 }

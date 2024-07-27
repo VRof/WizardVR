@@ -139,6 +139,7 @@ if __name__ == "__main__":
         else:
             try:
                 drawn_image = Image.open(io.BytesIO(received_data))
+                print("new spell")
                 predicted_skill, confidence, prediction_array = predict_skill(loaded_model, drawn_image, class_names)
                 prediction_array = prediction_array * 100
                 print(f"Predicted skill: {predicted_skill}")
@@ -154,6 +155,7 @@ if __name__ == "__main__":
             except Exception as e:
                 try:
                     text_from_user = received_data.decode('utf-8')
+                    print(text_from_user)
                     if text_from_user in class_names: #new label for image during the game 
                         loss = update_model(loaded_model, experience_replay, drawn_image, class_names.index(text_from_user))
                         loaded_model.save(profile_name + ".h5")
@@ -161,9 +163,11 @@ if __name__ == "__main__":
                     else: #the game is loaded we should recieve profile name
                         profile_name = text_from_user
                         model_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-                        base_path = os.path.join(model_dir, profile_name + ".h5")
+                        base_path = os.path.join(model_dir,"models", profile_name + ".h5")
+                        print(base_path)
                         model_save_path = base_path  # Path to save the model
                         loaded_model = load_saved_model(model_save_path)
+                        sock.sendall("Model loaded".encode("UTF-8"))
                 except Exception as inner_e:
                     print(f"Error during prediction: {inner_e}")
                     sock.sendall(f"Error during prediction: {inner_e}".encode("UTF-8"))
