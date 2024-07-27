@@ -29,6 +29,7 @@ public class GameStartMenu : MonoBehaviour
     [Header("Select Profile Menu Buttons")]
     public Button StartGameButton;
     public Button createProfile;
+    public Button deleteProfile;
     public TMP_Dropdown dropDownProfiles;
 
     [Header("Create Profile Menu Buttons")]
@@ -52,6 +53,7 @@ public class GameStartMenu : MonoBehaviour
         createProfile.onClick.AddListener(CreateProfile);
         dropDownProfiles.onValueChanged.AddListener(OnDropdownValueChanged);
         create.onClick.AddListener(CreateNewProfileFile);
+        deleteProfile.onClick.AddListener(DeleteProfile);
         back.onClick.AddListener(EnableSelectProfile);
         foreach (var item in returnButtons)
         {
@@ -101,6 +103,27 @@ public class GameStartMenu : MonoBehaviour
             EnableSelectProfile();
         }
     }
+    public void DeleteProfile() 
+    {
+        string deleteDestinationFilePath = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "models", profileModelName + ".h5");
+        try
+        {
+            // Check if the file exists
+            if (File.Exists(deleteDestinationFilePath))
+            {
+                File.Delete(deleteDestinationFilePath);
+                EnableSelectProfile();
+            }
+            else
+            {
+                Debug.Log($"File {deleteDestinationFilePath} not found.");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log($"An error occurred: {ex.Message}");
+        }
+    }
     public void CreateModelForNewProfile()
     {
         string sourceFilePath = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "models", "spell_recognition_model.h5");  
@@ -117,11 +140,13 @@ public class GameStartMenu : MonoBehaviour
     public void ProfileSelectedYes()
     {
         StartGameButton.interactable = false;
+        deleteProfile.interactable = false;
         profileSelected = false;
         if(dropDownProfiles.value != 0)
         {
             profileSelected = true;
             StartGameButton.interactable = true;
+            deleteProfile.interactable = true;
         }
     }
     public void StartGame()
@@ -163,6 +188,7 @@ public class GameStartMenu : MonoBehaviour
         about.SetActive(false);
         createProfileMenuLabel.enabled = false;
         StartGameButton.interactable = false;
+        deleteProfile.interactable = false;
     }
     public void EnableSelectProfile()
     {
