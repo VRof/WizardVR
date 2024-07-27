@@ -25,6 +25,8 @@ public class pythonConnector : MonoBehaviour
     static byte[] myWriteBuffer;
     Process pythonProcess;
     public static string modelName;
+    [SerializeField] int fadeTime;
+    [SerializeField] TMPro.TMP_Text startLabel;
     public delegate void DataReceivedEventHandler(string data);
     public static event DataReceivedEventHandler OnDataReceived;
 
@@ -34,18 +36,32 @@ public class pythonConnector : MonoBehaviour
         mThread = new Thread(ts);
         mThread.Start();
         CreatePythonProcess();
-    }
 
+        StartCoroutine(PauseForSeconds(fadeTime));
+    }
+    private IEnumerator PauseForSeconds(float seconds)
+    {
+        Time.timeScale = 0;
+        UnityEngine.Debug.Log("Time paused");
+
+        yield return new WaitForSecondsRealtime(seconds);
+
+        Time.timeScale = 1;
+        UnityEngine.Debug.Log("Time resumed");
+
+        if (startLabel != null)
+            startLabel.enabled = false;
+        SetDataToSend(Encoding.UTF8.GetBytes(modelName));
+        UnityEngine.Debug.Log(modelName + "sent");
+    }
     private void CreatePythonProcess() {
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        //startInfo.FileName = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython") + "\"";
-        //startInfo.Arguments = modelName;
         startInfo.FileName = "python";
         startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\"";
-        //startInfo.UseShellExecute = false;
-        startInfo.CreateNoWindow = false;
+        startInfo.UseShellExecute = true;
+        startInfo.CreateNoWindow = true;
         pythonProcess = Process.Start(startInfo);
-        //UnityEngine.Debug.Log(modelName + " started");
+        UnityEngine.Debug.Log("python called");
     }
 
     private void OnApplicationQuit()
@@ -82,15 +98,14 @@ public class pythonConnector : MonoBehaviour
 
                     if (dataReceived != null)
                     {
-                        //if(dataReceived == "none" || dataReceived == "not recognized")
-                        //{
-                        //    UnityEngine.Debug.Log("model couldn't recognize the spell!");
-                        //}
-                        //else
-                        //{
-                        //    UnityEngine.Debug.Log(dataReceived);
-                        //}
-                        OnDataReceived?.Invoke(dataReceived);
+                        if(dataReceived != "Model loaded" || dataReceived != "Model Updated")
+                        {
+                            OnDataReceived?.Invoke(dataReceived);
+                        }
+                        else
+                        {
+                            UnityEngine.Debug.Log(dataReceived);
+                        }
                     }
                 }
                 myWriteBuffer = null;

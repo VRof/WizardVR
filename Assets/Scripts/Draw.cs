@@ -49,9 +49,8 @@ public class Draw : MonoBehaviour
     //    {
     //        if (currentDrawing != null)
     //        {
-    //            Debug.Log("New Drawing");
     //            currentDrawing.material = whiteMaterial;
-    //            TakePicture.SavePicture(cam, tip.gameObject);
+    //            TakePicture.SavePicture(cam, currentDrawing);
     //            pythonConnector.SetDataToSend(TakePicture.GetLastPictureAsData());
     //            Destroy(currentDrawing.gameObject);
     //            currentDrawing = null;

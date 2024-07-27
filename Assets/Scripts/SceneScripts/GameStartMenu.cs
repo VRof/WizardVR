@@ -21,38 +21,38 @@ public class GameStartMenu : MonoBehaviour
    
     [Header("Main Menu Buttons")]
     public Button startButton;
-    public Button selectProfile;
     public Button optionButton;
     public Button aboutButton;
     public Button quitButton;
     public List<Button> returnButtons;
 
     [Header("Select Profile Menu Buttons")]
-    public Button select;
+    public Button StartGameButton;
     public Button createProfile;
     public TMP_Dropdown dropDownProfiles;
 
     [Header("Create Profile Menu Buttons")]
     public TMP_InputField nameInputField;
     public Button create;
+    public Button back;
     public TMP_Text createProfileMenuLabel;
+
     // Start is called before the first frame update
     void Start()
     {
         profiles = new List<TMP_Dropdown.OptionData>();
         EnableMainMenu();
+
         //Hook events
-        profileSelected = false;
-        startButton.interactable = false;
-        startButton.onClick.AddListener(StartGame);
+        startButton.onClick.AddListener(EnableSelectProfile);
         optionButton.onClick.AddListener(EnableOption);
         aboutButton.onClick.AddListener(EnableAbout);
         quitButton.onClick.AddListener(QuitGame);
-        selectProfile.onClick.AddListener(EnableSelectProfile);
-        select.onClick.AddListener(ProfileSelectedYes);
+        StartGameButton.onClick.AddListener(StartGame);
         createProfile.onClick.AddListener(CreateProfile);
         dropDownProfiles.onValueChanged.AddListener(OnDropdownValueChanged);
         create.onClick.AddListener(CreateNewProfileFile);
+        back.onClick.AddListener(EnableSelectProfile);
         foreach (var item in returnButtons)
         {
             item.onClick.AddListener(EnableMainMenu);
@@ -74,25 +74,28 @@ public class GameStartMenu : MonoBehaviour
         createProfileMenu.SetActive(true);
         options.SetActive(false);
         about.SetActive(false);
+        nameInputField.text = "";
+        createProfileMenuLabel.enabled = false;
     }
     public void CreateNewProfileFile()
     {
         bool isNameValid = true;
-        Debug.Log(nameInputField.text);
         foreach (TMP_Dropdown.OptionData o in profiles)
         {
-            Debug.Log(o.text);
-            Debug.Log(o.text.Equals(nameInputField.text));
-            Debug.Log(o.text == nameInputField.text);
             if (o.text.Equals(nameInputField.text))
             {
                 createProfileMenuLabel.text = "Choose another name";
-                //createProfileMenuLabel.IsActive();
+                createProfileMenuLabel.enabled = true;
+                isNameValid = false;
+            }
+            if(nameInputField.text == "")
+            {
+                createProfileMenuLabel.text = "Enter a name";
                 createProfileMenuLabel.enabled = true;
                 isNameValid = false;
             }
         }
-        if(isNameValid == true)
+        if(isNameValid)
         {
             CreateModelForNewProfile();
             EnableSelectProfile();
@@ -100,7 +103,7 @@ public class GameStartMenu : MonoBehaviour
     }
     public void CreateModelForNewProfile()
     {
-        string sourceFilePath = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "models","base.h5");  
+        string sourceFilePath = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "models", "spell_recognition_model.h5");  
         string destinationFilePath = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "models", nameInputField.text + ".h5");
         try
         {
@@ -113,14 +116,13 @@ public class GameStartMenu : MonoBehaviour
     }
     public void ProfileSelectedYes()
     {
-        startButton.interactable = false;
+        StartGameButton.interactable = false;
         profileSelected = false;
         if(dropDownProfiles.value != 0)
         {
             profileSelected = true;
-            startButton.interactable = true;
+            StartGameButton.interactable = true;
         }
-        EnableMainMenu();
     }
     public void StartGame()
     {
@@ -152,7 +154,7 @@ public class GameStartMenu : MonoBehaviour
         options.SetActive(false);
         about.SetActive(false);
     }
-    public void EnableSelectProfile()
+    public void EnableSelectPRofileMenu()
     {
         mainMenu.SetActive(false);
         profileMenu.SetActive(true);
@@ -160,6 +162,11 @@ public class GameStartMenu : MonoBehaviour
         options.SetActive(false);
         about.SetActive(false);
         createProfileMenuLabel.enabled = false;
+        StartGameButton.interactable = false;
+    }
+    public void EnableSelectProfile()
+    {
+        EnableSelectPRofileMenu();
         // Collect all profile names based on models amount and names
         string profilesFolderPath = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "models");
         List<string> fileNames = new List<string>();
@@ -178,7 +185,7 @@ public class GameStartMenu : MonoBehaviour
         profiles.Add(new TMP_Dropdown.OptionData("Select..", null));
         foreach (string name in fileNames)
         {
-            if (!name.Equals("base.h5"))
+            if (!name.Equals("spell_recognition_model.h5"))
             {
                 profiles.Add(new TMP_Dropdown.OptionData(Path.GetFileNameWithoutExtension(name), null));
             }
@@ -192,6 +199,7 @@ public class GameStartMenu : MonoBehaviour
     }
     public void OnDropdownValueChanged(int index)
     {
+        ProfileSelectedYes();
         profileIndex = index;
         profileModelName = dropDownProfiles.options[index].text;
         Debug.Log($"Selected profile: {dropDownProfiles.options[index].text}");
