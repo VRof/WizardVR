@@ -68,6 +68,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   connectionIP: 127.0.0.1
   connectionPort: 25001
+  fadeTime: 0
+  startLabel: {fileID: 0}
 --- !u!114 &3549268254210542633
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -10,6 +10,8 @@ public class EnemyMeleeController : MonoBehaviour
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float runSpeedThreshold = 1.5f;
     [SerializeField] private float detectionRange = 20f;
+    [SerializeField] private LayerMask obstacleLayer; //Layer for obstacles
+
 
     [Header("Wandering")]
     [SerializeField] private float wanderRadius = 10f;
@@ -105,8 +107,23 @@ public class EnemyMeleeController : MonoBehaviour
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
         if (distanceToTarget <= attackRange && !isAttacking)
         {
-            StartCoroutine(AttackTarget());
+            if (CanSeeTarget())
+            {
+                StartCoroutine(AttackTarget());
+            }
         }
+    }
+
+    private bool CanSeeTarget()
+    {
+        Vector3 directionToTarget = (target.position - transform.position).normalized;
+        if (Physics.Raycast(transform.position, directionToTarget, out RaycastHit hit, attackRange, obstacleLayer))
+        {
+            // If we hit something that's not the target, we can't see the target
+            return hit.transform == target;
+        }
+        // If we didn't hit anything, we can see the target
+        return true;
     }
 
     private void SetNextWanderTime()
