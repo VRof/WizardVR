@@ -123,6 +123,7 @@ if __name__ == "__main__":
     profile_name:str = ""
 
     load_initial_buffer(experience_replay, class_names)
+    loaded_model = load_saved_model(os.path.dirname(os.path.abspath(sys.argv[0])) + "/models/" + "spell_recognition_model.h5")
 
     try:
         host, port = "127.0.0.1", 25001
@@ -144,7 +145,6 @@ if __name__ == "__main__":
                 prediction_array = prediction_array * 100
                 print(f"Predicted skill: {predicted_skill}")
                 print(f"Confidence: {confidence}")
-
                 sock.sendall(str([f"{name:} {value:.2f}%" for name,value in zip(class_names ,prediction_array)]).encode("UTF-8"))# send to unity
                 if predicted_skill != "others":
                     if confidence > 0.95:
@@ -160,14 +160,15 @@ if __name__ == "__main__":
                         loss = update_model(loaded_model, experience_replay, drawn_image, class_names.index(text_from_user))
                         loaded_model.save(profile_name + ".h5")
                         sock.sendall("Model updated".encode("UTF-8"))
-                    else: #the game is loaded we should recieve profile name
-                        profile_name = text_from_user
-                        model_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-                        base_path = os.path.join(model_dir,"models", profile_name + ".h5")
-                        print(base_path)
-                        model_save_path = base_path  # Path to save the model
-                        loaded_model = load_saved_model(model_save_path)
-                        sock.sendall("Model loaded".encode("UTF-8"))
+                    # else: #the game is loaded we should recieve profile name
+                    #     profile_name = text_from_user
+                    #     model_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+                    #     base_path = os.path.join(model_dir,"models", profile_name + ".h5")
+                    #     print(base_path)
+                    #     model_save_path = base_path  # Path to save the model
+                    #     loaded_model = load_saved_model(model_save_path)
+                    #     sock.sendall("Model loaded".encode("UTF-8"))
+
                 except Exception as inner_e:
                     print(f"Error during prediction: {inner_e}")
                     sock.sendall(f"Error during prediction: {inner_e}".encode("UTF-8"))

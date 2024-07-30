@@ -51,7 +51,7 @@ public class pythonConnector : MonoBehaviour
 
         if (startLabel != null)
             startLabel.enabled = false;
-        SetDataToSend(Encoding.UTF8.GetBytes(modelName));
+       // SetDataToSend(Encoding.UTF8.GetBytes(modelName));
         UnityEngine.Debug.Log(modelName + "sent");
     }
     private void CreatePythonProcess() {

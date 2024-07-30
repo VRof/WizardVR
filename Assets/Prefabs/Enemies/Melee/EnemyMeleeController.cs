@@ -116,14 +116,18 @@ public class EnemyMeleeController : MonoBehaviour
 
     private bool CanSeeTarget()
     {
-        Vector3 directionToTarget = (target.position - transform.position).normalized;
-        if (Physics.Raycast(transform.position, directionToTarget, out RaycastHit hit, attackRange, obstacleLayer))
+        if (isInCombat)
         {
-            // If we hit something that's not the target, we can't see the target
-            return hit.transform == target;
+            Vector3 directionToTarget = (target.position - transform.position).normalized;
+            if (Physics.Raycast(transform.position, directionToTarget, out RaycastHit hit, attackRange, obstacleLayer))
+            {
+                // If we hit something that's not the target, we can't see the target
+                return hit.transform == target;
+            }
+            // If we didn't hit anything, we can see the target
+            return true;
         }
-        // If we didn't hit anything, we can see the target
-        return true;
+        return false;
     }
 
     private void SetNextWanderTime()

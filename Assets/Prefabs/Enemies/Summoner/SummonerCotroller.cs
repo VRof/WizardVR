@@ -11,6 +11,7 @@ public class SummonerController : MonoBehaviour
     [SerializeField] private float detectionRange = 25f;
     [SerializeField] private LayerMask obstacleLayer;
     [SerializeField] private GameObject minion;
+    [SerializeField] private GameObject portal;
 
     [Header("Wandering")]
     [SerializeField] private float wanderRadius = 10f;
@@ -24,6 +25,7 @@ public class SummonerController : MonoBehaviour
     private bool isWandering = false;
     private Vector3 startPosition;
     private float nextWanderTime;
+    private const float UPDATE_INTERVAL = 0.2f;
 
     // Animation parameters
     private static readonly int WalkSpeedParam = Animator.StringToHash("walkSpeed");
@@ -31,86 +33,84 @@ public class SummonerController : MonoBehaviour
 
     private void Start()
     {
-        
         animator = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
         startPosition = transform.position;
         SetNextWanderTime();
+        InvokeRepeating(nameof(SlowUpdate), 0f, UPDATE_INTERVAL);
     }
 
-    private void Update()
+    private void SlowUpdate()
     {
-        if (!isInCombat)
+        float sqrDistanceToTarget = (target.position - transform.position).sqrMagnitude;
+        float sqrDetectionRange = detectionRange * detectionRange;
+        float sqrAttackRange = attackRange * attackRange;
+
+        if (sqrDistanceToTarget <= sqrDetectionRange)
         {
-            if (Vector3.Distance(target.position, transform.position) <= detectionRange)
+            isInCombat = true;
+            if (sqrDistanceToTarget <= sqrAttackRange && CanSeeTarget())
             {
-                isInCombat = true;
+                StopMovingAndAttack();
             }
-            else if (!isWandering)
+            else if(!isSummoning)
             {
-                StartCoroutine(Wander());
+                agent.SetDestination(target.position);
             }
         }
-        else if(!isSummoning) {
-        
-            StartCoroutine(CombatBehavior());
+        else
+        {
+            isInCombat = false;
+            Wander();
         }
-        UpdateAnimationState();
+
+        UpdateAnimations();
     }
 
-    private IEnumerator Wander()
+    private void Wander()
     {
         if (Time.time >= nextWanderTime)
         {
-            isWandering = true;
             Vector3 randomPoint = startPosition + Random.insideUnitSphere * wanderRadius;
             if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, wanderRadius, NavMesh.AllAreas))
             {
                 agent.SetDestination(hit.position);
-                while (agent.pathPending || agent.remainingDistance > agent.stoppingDistance)
-                {
-                    if (isInCombat) yield break;
-                    yield return null;
-                }
             }
-
-            yield return new WaitForSeconds(Random.Range(minWanderWaitTime, maxWanderWaitTime));
             SetNextWanderTime();
-            isWandering = false;
         }
     }
-
-    private IEnumerator CombatBehavior()
-    {   transform.LookAt(target);
+    private void StopMovingAndAttack()
+    {
+        agent.ResetPath();
         if (!isSummoning)
         {
-            float distanceToTarget = Vector3.Distance(transform.position, target.position);
-            if (distanceToTarget <= attackRange && CanSeeTarget())
-            {
-                agent.SetDestination(transform.position);
-                isSummoning = true;
-                animator.SetTrigger(IsSummoningParam);
-                yield return new WaitForSeconds(summonCooldown);
-                isSummoning = false;
-
-            }
+            transform.LookAt(target);
+            StartCoroutine(AttackCoroutine());
         }
-
+    }
+    private IEnumerator AttackCoroutine()
+    {
+        isSummoning = true;
+        animator.SetTrigger(IsSummoningParam);
+        GameObject portal = OpenPortal();
+        yield return new WaitForSeconds(summonCooldown);
+        isSummoning = false;
+        agent.SetDestination(target.position);
+        Destroy(portal);
     }
 
-    public void ResumeTarget() {
-    agent.SetDestination(target.transform.position);
-    }
 
     public void Summon() {
-
         Vector3 spawnPoint = transform.position + transform.forward * 1.1f;
         GameObject minionToSpawn = Instantiate(minion, spawnPoint, transform.rotation);
-        
     }
 
+    public GameObject OpenPortal() {
+        Vector3 spawnPoint = transform.position + transform.forward * 1.1f + Vector3.up;
+        return Instantiate(portal, spawnPoint, transform.rotation);
+    }
 
-    private void UpdateAnimationState()
+    private void UpdateAnimations()
     {
         float speed = agent.velocity.magnitude;
         animator.SetFloat(WalkSpeedParam, speed);
@@ -118,8 +118,19 @@ public class SummonerController : MonoBehaviour
 
     private bool CanSeeTarget()
     {
-        // Implement line of sight check if needed
-        return true;
+        if (isInCombat) {
+            Vector3 direction = target.position - transform.position;
+            return !Physics.SphereCast(
+                transform.position,
+                0.3f,
+                direction.normalized,
+                out RaycastHit hit,
+                attackRange,
+                obstacleLayer,
+                QueryTriggerInteraction.Ignore
+            ) || hit.transform == target;
+        }
+        return false;
     }
 
     private void SetNextWanderTime()

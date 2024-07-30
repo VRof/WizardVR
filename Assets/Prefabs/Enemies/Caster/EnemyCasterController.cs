@@ -114,16 +114,20 @@ public class EnemyCasterController : MonoBehaviour
 
     private bool CanSeeTarget()
     {
-        Vector3 direction = target.position - transform.position;
-        return !Physics.SphereCast(
-            transform.position,
-            sphereCastRadius,
-            direction.normalized,
-            out RaycastHit hit,
-            attackRange,
-            obstacleLayer,
-            QueryTriggerInteraction.Ignore
-        ) || hit.transform == target;
+        if (isInCombat)
+        {
+            Vector3 direction = target.position - transform.position;
+            return !Physics.SphereCast(
+                transform.position,
+                sphereCastRadius,
+                direction.normalized,
+                out RaycastHit hit,
+                attackRange,
+                obstacleLayer,
+                QueryTriggerInteraction.Ignore
+            ) || hit.transform == target;
+        }
+    return false;
     }
 
     private IEnumerator AttackCoroutine()
