@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ProjectileMover : MonoBehaviour
 {
+    public float damage = 5f;
     public float speed = 15f;
     public float hitOffset = 0f;
     public bool UseFirePointRotation;
@@ -15,6 +16,7 @@ public class ProjectileMover : MonoBehaviour
 
     void Start()
     {
+        gameObject.name = "summonminion";
         rb = GetComponent<Rigidbody>();
         if (flash != null)
         {
@@ -79,6 +81,20 @@ public class ProjectileMover : MonoBehaviour
                 detachedPrefab.transform.parent = null;
             }
         }
+
+        ApplyDamage(collision.collider);
+
         Destroy(gameObject);
+    }
+    private void ApplyDamage(Collider collider)
+    {
+        // Skip self or non-damageable objects
+        if (collider.gameObject == gameObject) return;
+
+        IDamageable damageable = collider.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            damageable.TakeDamage(damage); // Apply damage
+        }
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class MeteorMovement : MonoBehaviour
 {
     public float speed = 15f;
+    public float damage = 30f;
     GameObject tip;
     Vector3 tipInitialPositionForward;
     bool collisionFlag = false;
@@ -18,6 +19,7 @@ public class MeteorMovement : MonoBehaviour
     private Rigidbody rb;
     void Start()
     {
+        gameObject.name = "meteor";
         tip = GameObject.Find("tip");
         tipInitialPositionForward = tip.transform.forward;
         rb = GetComponent<Rigidbody>();
@@ -49,9 +51,14 @@ public class MeteorMovement : MonoBehaviour
     //}
     void OnCollisionEnter(Collision collision)
     {
-        if (collisionFlag == false)
+        if (!collisionFlag)
+        {
             rb.velocity = new Vector3(tipInitialPositionForward.x, 0, tipInitialPositionForward.z) * speed;
+        }
         collisionFlag = true;
+
+        ApplyDamage(collision.collider);
+
         //Lock all axes movement and rotation
         //rb.constraints = RigidbodyConstraints.FreezeAll;
         //speed = 0;
@@ -87,5 +94,16 @@ public class MeteorMovement : MonoBehaviour
         //}
         //Destroy(gameObject);
         //Destroy(collision.gameObject);
+    }
+    private void ApplyDamage(Collider collider)
+    {
+        // Skip self or non-damageable objects
+        if (collider.gameObject == gameObject) return;
+
+        IDamageable damageable = collider.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            damageable.TakeDamage(damage); // Apply damage
+        }
     }
 }
