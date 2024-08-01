@@ -9767,12 +9767,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 15
+  damage: 20
+  explosionRadius: 5
   lifeTime: 5
   flash: {fileID: 0}
   hit: {fileID: 6864474721495767474, guid: b3110b7c0cdd1804ca0244ee90b9f8e0, type: 3}
   hitOffset: 0.2
   UseFirePointRotation: 0
-  Detached: []
+  detachedObjects: []
   rotationOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &7284133642796177027
 GameObject:

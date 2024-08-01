@@ -4,6 +4,7 @@ using UnityEngine.AI;
 
 public class SummonMinionController : MonoBehaviour
 {
+    public static float damage = 5f;
     public float searchRadius = 10f;
     public float attackRange = 5f;
     public float attackCooldown = 2f;
@@ -166,29 +167,32 @@ public class SummonMinionController : MonoBehaviour
 
     public void CastSpell()
     {
-        Collider targetCollider = currentTarget.GetComponent<Collider>();
-        if (targetCollider != null)
+        if(currentTarget.GetComponent<Collider>() != null)
         {
-            // Get the center of the target's collider
-            Vector3 spellTargetPosition = targetCollider.bounds.center;
+            Collider targetCollider = currentTarget.GetComponent<Collider>();
+            if (targetCollider != null)
+            {
+                // Get the center of the target's collider
+                Vector3 spellTargetPosition = targetCollider.bounds.center;
 
-            // Calculate the position to spawn the spell
-            Vector3 spellSpawnPoint = transform.position + transform.forward * 1.1f + Vector3.up;
-            GameObject spell = Instantiate(spellPrefab, spellSpawnPoint, Quaternion.identity);
+                // Calculate the position to spawn the spell
+                Vector3 spellSpawnPoint = transform.position + transform.forward * 1.1f + Vector3.up;
+                GameObject spell = Instantiate(spellPrefab, spellSpawnPoint, Quaternion.identity);
 
-            // Determine the direction to cast the spell
-            Vector3 direction = (spellTargetPosition - spellSpawnPoint).normalized;
-            spell.transform.forward = direction;
+                // Determine the direction to cast the spell
+                Vector3 direction = (spellTargetPosition - spellSpawnPoint).normalized;
+                spell.transform.forward = direction;
 
-            //Rigidbody spellRb = spell.GetComponent<Rigidbody>();
-            //if (spellRb != null)
-            //{
-            //    spellRb.velocity = direction * spellSpeed;
-            //}
-            //else
-            //{
-            //    Debug.LogWarning("Spell prefab does not have a Rigidbody component.");
-            //}
+                //Rigidbody spellRb = spell.GetComponent<Rigidbody>();
+                //if (spellRb != null)
+                //{
+                //    spellRb.velocity = direction * spellSpeed;
+                //}
+                //else
+                //{
+                //    Debug.LogWarning("Spell prefab does not have a Rigidbody component.");
+                //}
+            }
         }
     }
 

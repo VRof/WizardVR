@@ -6,17 +6,21 @@ public class Projectile : MonoBehaviour
 {
     // Start is called before the first frame update
     public float speed = 15f;
+    public float damage = 50;
+    public float explosionRadius = 3f; // Radius of the explosion effect
     GameObject tip;
     [SerializeField] float lifeTime = 2f;
     [SerializeField] GameObject flash;
     [SerializeField] GameObject hit;
     [SerializeField] float hitOffset = 0f;
     [SerializeField] bool UseFirePointRotation;
-    [SerializeField] GameObject[] Detached;
+    [SerializeField] GameObject[] detachedObjects;
     [SerializeField] Vector3 rotationOffset = new Vector3(0, 0, 0);
     private Rigidbody rb;
+    private bool hasExploded = false;
     void Start()
     {
+        gameObject.name = "fireball";
         tip = GameObject.Find("tip");
         rb = GetComponent<Rigidbody>();
         if (flash != null)
@@ -45,22 +49,63 @@ public class Projectile : MonoBehaviour
             //transform.position += transform.forward * (speed * Time.deltaTime);         
         }
     }
-    void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision)
     {
-        //Lock all axes movement and rotation
+        if (hasExploded) return; // Prevent multiple explosions
+
+        hasExploded = true;
         rb.constraints = RigidbodyConstraints.FreezeAll;
         speed = 0;
 
-        ContactPoint contact = collision.contacts[0];
-        Quaternion rot = Quaternion.FromToRotation(Vector3.up, contact.normal);
-        Vector3 pos = contact.point + contact.normal * hitOffset;
+        // Handle explosion effects
+        Explode();
+    }
 
+    private void Explode()
+    {
+        // Get all colliders within the explosion radius
+        Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
+
+        foreach (var collider in colliders)
+        {
+            // Skip self or non-damageable objects
+            if (collider.gameObject == gameObject) continue;
+
+            IDamageable damageable = collider.GetComponent<IDamageable>();
+            if (damageable != null)
+            {
+                damageable.TakeDamage(damage); // Apply damage
+            }
+        }
+
+        // Handle hit effects
+        HandleHitEffect();
+        HandleDetachedObjects();
+
+        // Destroy the projectile after explosion effects
+        Destroy(gameObject);
+    }
+
+    private void HandleHitEffect()
+    {
         if (hit != null)
         {
+            Quaternion rot = Quaternion.identity;
+            Vector3 pos = transform.position;
+
             var hitInstance = Instantiate(hit, pos, rot);
-            if (UseFirePointRotation) { hitInstance.transform.rotation = gameObject.transform.rotation * Quaternion.Euler(0, 180f, 0); }
-            else if (rotationOffset != Vector3.zero) { hitInstance.transform.rotation = Quaternion.Euler(rotationOffset); }
-            else { hitInstance.transform.LookAt(contact.point + contact.normal); }
+            if (UseFirePointRotation)
+            {
+                hitInstance.transform.rotation = transform.rotation * Quaternion.Euler(0, 180f, 0);
+            }
+            else if (rotationOffset != Vector3.zero)
+            {
+                hitInstance.transform.rotation = Quaternion.Euler(rotationOffset);
+            }
+            else
+            {
+                hitInstance.transform.LookAt(pos + transform.forward);
+            }
 
             var hitPs = hitInstance.GetComponent<ParticleSystem>();
             if (hitPs != null)
@@ -73,14 +118,16 @@ public class Projectile : MonoBehaviour
                 Destroy(hitInstance, hitPsParts.main.duration);
             }
         }
-        foreach (var detachedPrefab in Detached)
+    }
+
+    private void HandleDetachedObjects()
+    {
+        foreach (var detachedPrefab in detachedObjects)
         {
             if (detachedPrefab != null)
             {
                 detachedPrefab.transform.parent = null;
             }
         }
-        Destroy(gameObject);
-        //Destroy(collision.gameObject);
     }
 }

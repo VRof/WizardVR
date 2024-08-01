@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SkeletonController : MonoBehaviour
+public class SkeletonController : MonoBehaviour, IDamageable
 {
-    [SerializeField] float hp;
     [SerializeField] private float attackRange = 1.5f;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float pathUpdateTime = 0.1f;
@@ -16,12 +15,21 @@ public class SkeletonController : MonoBehaviour
     private Animator animator;
     private bool isAttacking = false;
     private float lastAttackTime = 0f;
+    private Collider enemyCollider;
+
+    [Header("HealthBar")]
+    [SerializeField] float maxHealth = 20;
+    float currentHealth;
+    [SerializeField] private EnemyHealthBar healthBar;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         target = GameObject.Find("PlayerModel").transform;
         animator = GetComponentInChildren<Animator>();
+        enemyCollider = GetComponent<Collider>();
+        currentHealth = maxHealth;
+        healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
     }
 
     void Update()
@@ -75,5 +83,34 @@ public class SkeletonController : MonoBehaviour
         yield return new WaitForSeconds(attackCooldown);
 
         isAttacking = false;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            healthBar.UpdateEnemyHealthBar(maxHealth, 0);
+            Die();
+        }
+        else
+        {
+            healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
+        }
+    }
+    public void Die()
+    {
+        StartCoroutine(DieCoroutine());
+    }
+    private IEnumerator DieCoroutine()
+    {
+        animator.SetTrigger("isDead");
+        Destroy(enemyCollider);
+
+        yield return new WaitForSeconds(2.2f);
+
+        enabled = false;
+        agent.enabled = false;
+        Destroy(gameObject);
     }
 }

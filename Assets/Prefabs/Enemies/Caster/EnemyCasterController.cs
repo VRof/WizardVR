@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using System.Collections;
 
-public class EnemyCasterController : MonoBehaviour
+public class EnemyCasterController : MonoBehaviour, IDamageable
 {
     [Header("References")]
     [SerializeField] private Transform target;
@@ -25,6 +25,12 @@ public class EnemyCasterController : MonoBehaviour
     [SerializeField] private float sphereCastRadius = 0.5f;
     [SerializeField] private LayerMask obstacleLayer;
 
+    [Header("HealthBar")]
+    [SerializeField] float maxHealth = 100;
+    float currentHealth;
+    [SerializeField] private EnemyHealthBar healthBar;
+
+    private Collider enemyCollider;
     private Vector3 startPosition;
     private bool isInCombat = false;
     private float nextWanderTime;
@@ -34,8 +40,6 @@ public class EnemyCasterController : MonoBehaviour
 
     // Animation parameters
     private static readonly int IsWalkingParam = Animator.StringToHash("isWalking");
-    private static readonly int IsDeadParam = Animator.StringToHash("isDead");
-    private static readonly int IsDamagedParam = Animator.StringToHash("isDamaged");
     private static readonly int IsAttackingParam = Animator.StringToHash("isAttacking");
     private static readonly int IsInCombatParam = Animator.StringToHash("isInCombat");
 
@@ -44,6 +48,10 @@ public class EnemyCasterController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
         startPosition = transform.position;
+        enemyCollider = GetComponent<Collider>();
+        currentHealth = maxHealth;
+        healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
+
         SetNextWanderTime();
         InvokeRepeating(nameof(SlowUpdate), 0f, UPDATE_INTERVAL);
     }
@@ -159,14 +167,31 @@ public class EnemyCasterController : MonoBehaviour
 
     public void TakeDamage(float damage)
     {
-        animator.SetTrigger(IsDamagedParam);
-        // Implement damage logic
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            healthBar.UpdateEnemyHealthBar(maxHealth, 0);
+            Die();
+        }
+        else
+        {
+            animator.SetTrigger("isDamage"); 
+            healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
+        }
     }
-
     public void Die()
     {
-        animator.SetBool(IsDeadParam, true);
-        agent.enabled = false;
+        StartCoroutine(DieCoroutine());
+    }
+    private IEnumerator DieCoroutine()
+    {
+        animator.SetTrigger("isDead");
+        Destroy(enemyCollider);
+
+        yield return new WaitForSeconds(4.8f);
+
         enabled = false;
+        agent.enabled = false;
+        Destroy(gameObject);
     }
 }

@@ -5690,6 +5690,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Skeleton
       objectReference: {fileID: 0}
+    - target: {fileID: 3670291647857268578, guid: 7f7ad2e17cb44ca44a5310b7d239fa01, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -10548,6 +10552,10 @@ PrefabInstance:
     - target: {fileID: 8679838749300685706, guid: 4e0fb454259bcec44be4a4a2f01f96a4, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.0000000012852251
+      objectReference: {fileID: 0}
+    - target: {fileID: 8711577380113704353, guid: 4e0fb454259bcec44be4a4a2f01f96a4, type: 3}
+      propertyPath: m_FillOrigin
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8718668744717751354, guid: 4e0fb454259bcec44be4a4a2f01f96a4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -23883,6 +23891,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: EnemySummoner
       objectReference: {fileID: 0}
+    - target: {fileID: 6638365844124365083, guid: 3a4d2a3c64127884d9831cdc6e4bac39, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6680961848943964212, guid: 3a4d2a3c64127884d9831cdc6e4bac39, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -0.37097585
@@ -31183,6 +31195,10 @@ PrefabInstance:
       propertyPath: rayInteractor
       value: 
       objectReference: {fileID: 577287559}
+    - target: {fileID: 3549345575701173611, guid: dc6332e09259f8544a939bec1635b997, type: 3}
+      propertyPath: FrostBeamPrefab
+      value: 
+      objectReference: {fileID: 1062685050423962, guid: b37f5a554254cd74c8a52ce6cd676992, type: 3}
     - target: {fileID: 3549345575701173611, guid: dc6332e09259f8544a939bec1635b997, type: 3}
       propertyPath: PredictionTextField
       value: 

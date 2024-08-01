@@ -3,7 +3,7 @@ using UnityEngine.AI;
 using System.Collections;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class EnemyMeleeController : MonoBehaviour
+public class EnemyMeleeController : MonoBehaviour, IDamageable
 {
     [SerializeField] private Transform target;
     [SerializeField] private float attackRange = 2f;
@@ -28,12 +28,23 @@ public class EnemyMeleeController : MonoBehaviour
     private float nextWanderTime;
     private bool isWandering = false;
     private bool isIdle = false;
+    private Collider enemyCollider;
+
+    [Header("HealthBar")]
+    [SerializeField] float maxHealth = 100;
+    float currentHealth;
+    [SerializeField] private EnemyHealthBar healthBar;
 
     private void Start()
     {
         animator = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
         startPosition = transform.position;
+        enemyCollider = GetComponent<Collider>();
+
+    currentHealth = maxHealth;
+        healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
+
         SetNextWanderTime();
         StartCoroutine(UpdatePathRoutine());
         StartCoroutine(WanderRoutine());
@@ -188,9 +199,19 @@ public class EnemyMeleeController : MonoBehaviour
         isAttacking = false;
     }
 
-    public void TakeHit()
+    public void TakeDamage(float damage)
     {
-        animator.SetTrigger("Hit");
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            healthBar.UpdateEnemyHealthBar(maxHealth, 0);
+            Die();
+        }
+        else
+        {
+            animator.SetTrigger("Hit");
+            healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
+        }
     }
 
     public void CastSpell()
@@ -200,8 +221,36 @@ public class EnemyMeleeController : MonoBehaviour
 
     public void Die()
     {
+        StartCoroutine(DieCoroutine());
+    }
+    private IEnumerator DieCoroutine()
+    {
         animator.SetTrigger("Death");
+        Destroy(enemyCollider);
+
+        yield return new WaitForSeconds(2.4f);
+
         enabled = false;
         agent.enabled = false;
+        Destroy(gameObject);
     }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    switch (collision.collider.name)
+    //    {
+    //        case "fireball":
+    //            TakeHit(Projectile.damage);
+    //            break;
+    //        case "frostbeam":
+    //            TakeHit(FrostBeamController.damage);
+    //            break;
+    //        case "meteor":
+    //            TakeHit(MeteorMovement.damage);
+    //            break;
+    //        case "summonminion":
+    //            TakeHit(SummonMinionController.damage);
+    //            break;
+    //    }
+    //    Debug.Log(collision.collider.name);
+    //}
 }
