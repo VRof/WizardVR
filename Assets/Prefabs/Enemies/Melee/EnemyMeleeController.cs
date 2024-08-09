@@ -29,6 +29,10 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
     private bool isWandering = false;
     private bool isIdle = false;
     private Collider enemyCollider;
+    public Collider rightHandCollider;
+    public Collider leftHandCollider;
+
+    [SerializeField] public static int meleeDamage = -3;
 
     [Header("HealthBar")]
     [SerializeField] float maxHealth = 100;
@@ -37,12 +41,14 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        rightHandCollider.enabled = false;
+        leftHandCollider.enabled = false;
         animator = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
         startPosition = transform.position;
         enemyCollider = GetComponent<Collider>();
 
-    currentHealth = maxHealth;
+        currentHealth = maxHealth;
         healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
 
         SetNextWanderTime();
@@ -234,23 +240,15 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
         agent.enabled = false;
         Destroy(gameObject);
     }
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    switch (collision.collider.name)
-    //    {
-    //        case "fireball":
-    //            TakeHit(Projectile.damage);
-    //            break;
-    //        case "frostbeam":
-    //            TakeHit(FrostBeamController.damage);
-    //            break;
-    //        case "meteor":
-    //            TakeHit(MeteorMovement.damage);
-    //            break;
-    //        case "summonminion":
-    //            TakeHit(SummonMinionController.damage);
-    //            break;
-    //    }
-    //    Debug.Log(collision.collider.name);
-    //}
+    public void EnableHandsCollider()
+    {
+        rightHandCollider.enabled = true;
+        leftHandCollider.enabled = true;
+    }
+
+    public void DisableHandsCollider()
+    {
+        rightHandCollider.enabled = false;
+        leftHandCollider.enabled = false;
+    }
 }
