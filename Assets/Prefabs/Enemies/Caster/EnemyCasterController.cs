@@ -37,6 +37,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     private bool isAttacking = false;
     private float nextUpdateTime;
     private const float UPDATE_INTERVAL = 0.2f;
+    [SerializeField] public static int casterDamage = -5;
 
     // Animation parameters
     private static readonly int IsWalkingParam = Animator.StringToHash("isWalking");

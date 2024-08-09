@@ -36,13 +36,11 @@ public class Player : MonoBehaviour
             yield return new WaitForSeconds(1);
             PlayerUpdateMana(ManaRegenerationAmount);
             PlayerUpdateHealth(HealthRegenerationAmount);
-
         }
     }
 
     public void PlayerUpdateHealth(float amount)
     {
-
         currentHealth += amount;
         if (currentHealth <= 0)
         {
@@ -73,4 +71,26 @@ public class Player : MonoBehaviour
 
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("got hit by " + collision.gameObject.name);
+
+        switch (collision.gameObject.name)
+        {
+            case "ColiderSword":
+                PlayerUpdateHealth(SkeletonController.skeletonDamage);
+                break;
+            case "EnemyFireBall(Clone)":
+                PlayerUpdateHealth(EnemyCasterController.casterDamage);
+                break;
+            case "LeftHandSphere":
+                PlayerUpdateHealth(EnemyMeleeController.meleeDamage);
+                break;
+            case "RightHandSphere":
+                PlayerUpdateHealth(EnemyMeleeController.meleeDamage);
+                break;
+            default:
+                break;
+        }
+    }
 }

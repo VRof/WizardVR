@@ -16,14 +16,16 @@ public class SkeletonController : MonoBehaviour, IDamageable
     private bool isAttacking = false;
     private float lastAttackTime = 0f;
     private Collider enemyCollider;
-
+    public Collider swordColider;
     [Header("HealthBar")]
     [SerializeField] float maxHealth = 20;
     float currentHealth;
     [SerializeField] private EnemyHealthBar healthBar;
+    [SerializeField] public static int skeletonDamage = -1;
 
     void Start()
     {
+        swordColider.enabled = false;
         agent = GetComponent<NavMeshAgent>();
         target = GameObject.Find("PlayerModel").transform;
         animator = GetComponentInChildren<Animator>();
@@ -78,6 +80,7 @@ public class SkeletonController : MonoBehaviour, IDamageable
         animator.SetBool("isRunning", false);
         animator.SetTrigger("isAttacking");
         lastAttackTime = Time.time;
+        
 
         // Wait for the attack animation to finish
         yield return new WaitForSeconds(attackCooldown);
@@ -112,5 +115,14 @@ public class SkeletonController : MonoBehaviour, IDamageable
         enabled = false;
         agent.enabled = false;
         Destroy(gameObject);
+    }
+
+    public void EnableSwordCollider()
+    {
+        swordColider.enabled = true;
+    }
+    public void DisableSwordCollider()
+    {
+        swordColider.enabled = false;
     }
 }
