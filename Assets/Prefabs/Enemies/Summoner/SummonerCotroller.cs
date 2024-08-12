@@ -32,10 +32,11 @@ public class SummonerController : MonoBehaviour, IDamageable
     private float nextWanderTime;
     private const float UPDATE_INTERVAL = 0.2f;
     private Collider enemyCollider;
-
+    private bool tookDamage = false;
     // Animation parameters
     private static readonly int WalkSpeedParam = Animator.StringToHash("walkSpeed");
     private static readonly int IsSummoningParam = Animator.StringToHash("isSummoning");
+    private bool isDying = false;
 
     private void Start()
     {
@@ -53,11 +54,12 @@ public class SummonerController : MonoBehaviour, IDamageable
 
     private void SlowUpdate()
     {
+        if (isDying) return;
         float sqrDistanceToTarget = (target.position - transform.position).sqrMagnitude;
         float sqrDetectionRange = detectionRange * detectionRange;
         float sqrAttackRange = attackRange * attackRange;
 
-        if (sqrDistanceToTarget <= sqrDetectionRange)
+        if (sqrDistanceToTarget <= sqrDetectionRange || tookDamage)
         {
             isInCombat = true;
             if (sqrDistanceToTarget <= sqrAttackRange && CanSeeTarget())
@@ -105,9 +107,9 @@ public class SummonerController : MonoBehaviour, IDamageable
         animator.SetTrigger(IsSummoningParam);
         GameObject portal = OpenPortal();
         yield return new WaitForSeconds(summonCooldown);
+        Destroy(portal);
         isSummoning = false;
         agent.SetDestination(target.position);
-        Destroy(portal);
     }
 
 
@@ -151,6 +153,7 @@ public class SummonerController : MonoBehaviour, IDamageable
 
     public void TakeDamage(float damage)
     {
+        tookDamage = true;
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
@@ -165,6 +168,8 @@ public class SummonerController : MonoBehaviour, IDamageable
     }
     public void Die()
     {
+        isDying = true;
+        agent.enabled = false;
         StartCoroutine(DieCoroutine());
     }
     private IEnumerator DieCoroutine()

@@ -35,15 +35,17 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     private bool isInCombat = false;
     private float nextWanderTime;
     private bool isAttacking = false;
+    private bool tookDamage = false;
     private float nextUpdateTime;
     private const float UPDATE_INTERVAL = 0.2f;
-    [SerializeField] public static int casterDamage = -5;
+    [SerializeField] public static int Damage = -5;
 
     // Animation parameters
     private static readonly int IsWalkingParam = Animator.StringToHash("isWalking");
     private static readonly int IsAttackingParam = Animator.StringToHash("isAttacking");
     private static readonly int IsInCombatParam = Animator.StringToHash("isInCombat");
 
+    private bool isDying = false;
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -60,13 +62,14 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
 
     private void SlowUpdate()
     {
+        if(isDying) return;
         if (target == null) return;
 
         float sqrDistanceToTarget = (target.position - transform.position).sqrMagnitude;
         float sqrDetectionRange = detectionRange * detectionRange;
         float sqrAttackRange = attackRange * attackRange;
 
-        if (sqrDistanceToTarget <= sqrDetectionRange)
+        if (sqrDistanceToTarget <= sqrDetectionRange || tookDamage)
         {
             isInCombat = true;
             if (sqrDistanceToTarget <= sqrAttackRange && CanSeeTarget())
@@ -118,6 +121,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
 
     private void ChaseTarget()
     {
+        if (isDying) return;
         agent.SetDestination(target.position);
     }
 
@@ -168,6 +172,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
 
     public void TakeDamage(float damage)
     {
+        tookDamage = true;
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
@@ -182,17 +187,18 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     }
     public void Die()
     {
+        isDying = true;
         StartCoroutine(DieCoroutine());
     }
     private IEnumerator DieCoroutine()
     {
+        agent.enabled = false;
         animator.SetTrigger("isDead");
         Destroy(enemyCollider);
 
         yield return new WaitForSeconds(4.8f);
 
         enabled = false;
-        agent.enabled = false;
         Destroy(gameObject);
     }
 }

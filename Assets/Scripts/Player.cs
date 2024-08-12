@@ -62,6 +62,10 @@ public class Player : MonoBehaviour
         manaBar.UpdateManaBar(maxMana, currentMana, ManaRegenerationAmount);
     }
 
+    public int GetCurrentMana() {
+        return (int)currentMana;
+    }
+
     public void PlayerUpdateRegenerationSpeed(float amount) {
         HealthRegenerationAmount = (int)amount;
     }
@@ -78,16 +82,16 @@ public class Player : MonoBehaviour
         switch (collision.gameObject.name)
         {
             case "ColiderSword":
-                PlayerUpdateHealth(SkeletonController.skeletonDamage);
+                PlayerUpdateHealth(SkeletonController.Damage);
                 break;
             case "EnemyFireBall(Clone)":
-                PlayerUpdateHealth(EnemyCasterController.casterDamage);
+                PlayerUpdateHealth(EnemyCasterController.Damage);
                 break;
             case "LeftHandSphere":
-                PlayerUpdateHealth(EnemyMeleeController.meleeDamage);
+                PlayerUpdateHealth(EnemyMeleeController.Damage);
                 break;
             case "RightHandSphere":
-                PlayerUpdateHealth(EnemyMeleeController.meleeDamage);
+                PlayerUpdateHealth(EnemyMeleeController.Damage);
                 break;
             default:
                 break;

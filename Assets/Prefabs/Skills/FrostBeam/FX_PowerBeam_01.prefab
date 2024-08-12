@@ -4872,7 +4872,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c12bb95e95d5304ba40e537ba8e22f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  liveTime: 2
+  liveTime: 2.1
+  damage: 5
+  rayInterval: 0.2
+  rayDistance: 100
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!1 &1136884546965694
 GameObject:
   m_ObjectHideFlags: 0
@@ -33605,7 +33611,7 @@ Transform:
   m_GameObject: {fileID: 1976113451622614}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.055}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -38423,7 +38429,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4457366647781904
 Transform:
   m_ObjectHideFlags: 0
@@ -38496,7 +38502,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.02e-43, y: 4.3e-44, z: 2.7216e-41, w: 5.8855383e+31}
+  m_BoundingSphereOverride: {x: 1.02e-43, y: 1.43e-43, z: 8.747e-42, w: -8.669127e-39}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0

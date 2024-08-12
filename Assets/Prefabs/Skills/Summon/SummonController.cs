@@ -8,6 +8,8 @@ public class SummonController : MonoBehaviour
     [SerializeField] float lifeTime = 4f;
     [SerializeField] float spawnInterval = 1f;
     [SerializeField] GameObject minion;
+    [SerializeField] float spawnRadius = 2f; // Radius of the spawn area
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,13 +23,11 @@ public class SummonController : MonoBehaviour
     // Method to spawn a minion
     void SpawnMinion()
     {
-        Instantiate(minion, transform.position, transform.rotation);
-    }
+        // Generate a random position within a circle
+        Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
+        Vector3 spawnPosition = transform.position + new Vector3(randomCircle.x, 0, randomCircle.y);
+        Instantiate(minion, spawnPosition, transform.rotation);
 
-    // Update is called once per frame
-    void Update()
-    {
-        // Optionally, you can add more functionality here
     }
 
     // This method is called when the game object is destroyed

@@ -6,33 +6,51 @@ public class FrostBeamController : MonoBehaviour
 {
     [SerializeField] float liveTime = 2f;
     public float damage = 3f;
+    [SerializeField] float rayInterval = 0.2f;
+    [SerializeField] float rayDistance = 100f;
+    [SerializeField] LayerMask targetLayers;
+
     GameObject tip;
-    // Start is called before the first frame update
+
     void Start()
     {
         gameObject.name = "frostbeam";
         tip = GameObject.Find("tip");
         Destroy(gameObject, liveTime);
+        StartCoroutine(ShootRays());
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(tip != null)
+        if (tip != null)
         {
             gameObject.transform.position = tip.transform.position - tip.transform.forward * 0.5f;
             gameObject.transform.forward = tip.transform.forward;
         }
     }
-    private void OnCollisionEnter(Collision collision)
+
+    IEnumerator ShootRays()
     {
-        ApplyDamage(collision.collider);
+        while (true)
+        {
+            ShootRay();
+            yield return new WaitForSeconds(rayInterval);
+        }
     }
+
+    void ShootRay()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(tip.transform.position, tip.transform.forward, out hit, rayDistance, targetLayers))
+        {
+            ApplyDamage(hit.collider);
+        }
+    }
+
     private void ApplyDamage(Collider collider)
     {
         // Skip self or non-damageable objects
         if (collider.gameObject == gameObject) return;
-
         IDamageable damageable = collider.GetComponent<IDamageable>();
         if (damageable != null)
         {

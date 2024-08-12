@@ -14,12 +14,19 @@ using UnityEngine.Windows;
 public class CastSystem : MonoBehaviour
 {
     [SerializeField] GameObject FireBallPrefab;
+    [SerializeField] int FireBoltManaCost = 5;
     [SerializeField] GameObject FrostBeamPrefab;
+    [SerializeField] int FrostBeamManaCost = 10;
     [SerializeField] GameObject MeteorPrefab;
+    [SerializeField] int MeteorManaCost = 50;
     [SerializeField] GameObject HealPrefab;
+    [SerializeField] int HealManaCost = 30;
     [SerializeField] GameObject ShieldPrefab;
+    [SerializeField] int ShieldManaCost = 10;
     [SerializeField] GameObject SummonPrefab;
+    [SerializeField] int SummonManaCost = 30;
     [SerializeField] GameObject PortalEnterPrefab;
+    [SerializeField] int PortalManaCost = 10;
     [SerializeField] GameObject PortalExitPrefab;
     [SerializeField] float teleportOffset = 5f;
     [SerializeField] GameObject Tip;
@@ -35,7 +42,10 @@ public class CastSystem : MonoBehaviour
     [SerializeField] bool debug = false;
     [SerializeField] TMP_Text PredictionTextField;
 
+
+
     GameObject currentSkill;
+    Player playerScript;
     TMP_Dropdown PredictionsDropdown;
     bool isPaused = false;
     //// Update is called once per frame
@@ -47,6 +57,7 @@ public class CastSystem : MonoBehaviour
 
     private void Start()
     {
+        playerScript = GameObject.Find("PlayerModel").GetComponent<Player>();
         if (debug && PredictionTextField != null) {
             PredictionTextField.text = "['fireball 0.00%', 'frostbeam 0.00%', 'heal 0.00%', 'meteor 0.00%', 'others 0.00%', 'shield 0.00%', 'summon 0.00%', 'teleport 0.00%']";
         }
@@ -124,23 +135,38 @@ public class CastSystem : MonoBehaviour
         {
             case "fireball":
                 //currentSkill = Instantiate(FireBallPrefab, Tip.transform.position, Tip.transform.rotation);
-                Instantiate(FireBallPrefab, Tip.transform.position, Tip.transform.rotation);
+                if (TryUseMana(FireBoltManaCost))
+                {
+                    Instantiate(FireBallPrefab, Tip.transform.position, Tip.transform.rotation);
+                }
                 break;
             case "frostbeam":
                 //currentSkill = Instantiate(FrostBallPrefab, Tip.transform.position, Tip.transform.rotation);
-                Instantiate(FrostBeamPrefab, Tip.transform.position, Tip.transform.rotation);
+                if (TryUseMana(FrostBeamManaCost))
+                {
+                    Instantiate(FrostBeamPrefab, Tip.transform.position, Tip.transform.rotation);
+                }
                 break;
             case "meteor":
                 //currentSkill = Instantiate(MeteorPrefab, new Vector3(Player.transform.position.x,Player.transform.position.y+1,Player.transform.position.z), Player.transform.rotation);
                 GameObject spawnPoint = GameObject.Find("MeteorSpawnPoint");
-                GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
-                meteor.transform.position += new Vector3(0, 3, 0);
+                if (TryUseMana(MeteorManaCost))
+                {
+                    GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
+                    meteor.transform.position += new Vector3(0, 3, 0);
+                }
                 break;
             case "heal":
-                Instantiate(HealPrefab, new Vector3(PlayerModel.transform.position.x, PlayerModel.transform.position.y - 2 * PlayerModel.transform.localScale.y, PlayerModel.transform.position.z), PlayerModel.transform.rotation);
+                if (TryUseMana(HealManaCost))
+                {
+                    Instantiate(HealPrefab, new Vector3(PlayerModel.transform.position.x, PlayerModel.transform.position.y - 2 * PlayerModel.transform.localScale.y, PlayerModel.transform.position.z), PlayerModel.transform.rotation);
+                }
                 break;
             case "shield":
-                Instantiate(ShieldPrefab, new Vector3(PlayerModel.transform.position.x, PlayerModel.transform.position.y - 2 * PlayerModel.transform.localScale.y, PlayerModel.transform.position.z), PlayerModel.transform.rotation);
+                if (TryUseMana(ShieldManaCost))
+                {
+                    Instantiate(ShieldPrefab, new Vector3(PlayerModel.transform.position.x, PlayerModel.transform.position.y - 2 * PlayerModel.transform.localScale.y, PlayerModel.transform.position.z), PlayerModel.transform.rotation);
+                }
                 break;
             case "summon":
                 spawnPoint = GameObject.Find("MeteorSpawnPoint");
@@ -153,10 +179,13 @@ public class CastSystem : MonoBehaviour
                 {
                     if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
                     {
-                        // Get the position where the ray hit the ground
-                        Vector3 spawnPosition = hit.point;
-                        // Instantiate the object at the hit point
-                        Instantiate(SummonPrefab, spawnPosition, Quaternion.identity);
+                        if (TryUseMana(SummonManaCost))
+                        {
+                            // Get the position where the ray hit the ground
+                            Vector3 spawnPosition = hit.point;
+                            // Instantiate the object at the hit point
+                            Instantiate(SummonPrefab, spawnPosition, Quaternion.identity);
+                        }
                     }
                 }
                 else
@@ -180,9 +209,12 @@ public class CastSystem : MonoBehaviour
                         // Instantiate the object at the hit point
                         if (CanPlaceExitPortal())
                         {
-                            GameObject portalEnter = Instantiate(PortalEnterPrefab, spawnPosition, new Quaternion(0, Tip.transform.rotation.y, 0, Tip.transform.rotation.w));
-                            portalEnter.transform.position += new Vector3(0, 1, 0);
-                            portalEnter.name = "PortalEnter";
+                            if (TryUseMana(PortalManaCost))
+                            {
+                                GameObject portalEnter = Instantiate(PortalEnterPrefab, spawnPosition, new Quaternion(0, Tip.transform.rotation.y, 0, Tip.transform.rotation.w));
+                                portalEnter.transform.position += new Vector3(0, 1, 0);
+                                portalEnter.name = "PortalEnter";
+                            }
                         }
 
                     }
@@ -197,6 +229,13 @@ public class CastSystem : MonoBehaviour
         }
     }
 
+    private bool TryUseMana(int amount) {
+        if (playerScript.GetCurrentMana() - amount < 0) {
+            return false;
+        }
+        playerScript.PlayerUpdateMana(-amount);
+        return true;
+    }
     public static Dictionary<string, float> ParseSkillString(string skillString)
     {
         // Remove the outer brackets and single quotes

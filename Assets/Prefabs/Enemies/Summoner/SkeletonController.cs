@@ -21,8 +21,10 @@ public class SkeletonController : MonoBehaviour, IDamageable
     [SerializeField] float maxHealth = 20;
     float currentHealth;
     [SerializeField] private EnemyHealthBar healthBar;
-    [SerializeField] public static int skeletonDamage = -1;
+    [SerializeField] public static int Damage = -1;
 
+
+    private bool isDying = false;
     void Start()
     {
         swordColider.enabled = false;
@@ -36,6 +38,7 @@ public class SkeletonController : MonoBehaviour, IDamageable
 
     void Update()
     {
+        if (isDying) return;
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
 
         if (distanceToTarget <= attackRange && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
@@ -94,6 +97,7 @@ public class SkeletonController : MonoBehaviour, IDamageable
         if (currentHealth <= 0)
         {
             healthBar.UpdateEnemyHealthBar(maxHealth, 0);
+            isDying = true;
             Die();
         }
         else
@@ -103,6 +107,8 @@ public class SkeletonController : MonoBehaviour, IDamageable
     }
     public void Die()
     {
+        agent.enabled = false;
+        isDying = true;
         StartCoroutine(DieCoroutine());
     }
     private IEnumerator DieCoroutine()

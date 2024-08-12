@@ -32,12 +32,14 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
     public Collider rightHandCollider;
     public Collider leftHandCollider;
 
-    [SerializeField] public static int meleeDamage = -3;
+    [SerializeField] public static int Damage = -3;
 
     [Header("HealthBar")]
     [SerializeField] float maxHealth = 100;
     float currentHealth;
     [SerializeField] private EnemyHealthBar healthBar;
+
+    private bool isDying = false;
 
     private void Start()
     {
@@ -58,6 +60,8 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
 
     private void Update()
     {
+        if (isDying) return;
+
         if (!isInCombat && Vector3.Distance(target.position, transform.position) <= detectionRange)
         {
             isInCombat = true;
@@ -76,11 +80,11 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
     private IEnumerator UpdatePathRoutine()
     {
         WaitForSeconds wait = new WaitForSeconds(0.1f);
-        while (enabled)
+        while (!isDying && enabled)
         {
             if (isInCombat && !isAttacking)
             {
-                agent.SetDestination(target.position);
+                agent?.SetDestination(target.position);
             }
             yield return wait;
         }
@@ -207,6 +211,7 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
 
     public void TakeDamage(float damage)
     {
+        isInCombat = true;
         currentHealth -= damage;
         if (currentHealth <= 0)
         {
@@ -227,6 +232,8 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
 
     public void Die()
     {
+        isDying = true;
+        agent.enabled = false;
         StartCoroutine(DieCoroutine());
     }
     private IEnumerator DieCoroutine()
@@ -237,7 +244,6 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(2.4f);
 
         enabled = false;
-        agent.enabled = false;
         Destroy(gameObject);
     }
     public void EnableHandsCollider()

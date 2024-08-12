@@ -43,9 +43,11 @@ public class pythonConnector : MonoBehaviour
     {
         Time.timeScale = 0;
         UnityEngine.Debug.Log("Time paused");
-
+        gameObject.GetComponent<Draw>().enabled = false;
+        gameObject.GetComponent<InGameMenuScript>().enabled = false;
         yield return new WaitForSecondsRealtime(seconds);
-
+        gameObject.GetComponent<Draw>().enabled = true;
+        gameObject.GetComponent<InGameMenuScript>().enabled = true;
         Time.timeScale = 1;
         UnityEngine.Debug.Log("Time resumed");
 
@@ -66,7 +68,14 @@ public class pythonConnector : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        pythonProcess.Kill();
+        mThread?.Abort();
+        pythonProcess?.Kill();
+    }
+
+    private void OnDestroy()
+    {
+        mThread?.Abort();
+        pythonProcess?.Kill();
     }
 
     void GetInfo()

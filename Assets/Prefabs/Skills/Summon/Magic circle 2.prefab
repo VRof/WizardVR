@@ -14766,7 +14766,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed001c07581b2344ebe0cee7ed076bac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifeTime: 3
+  lifeTime: 3.5
   spawnInterval: 1
   minion: {fileID: 1248815240492774, guid: ccd8c3b89aa02e943a08ab9238a8a70c, type: 3}
 --- !u!198 &1601506141239540749

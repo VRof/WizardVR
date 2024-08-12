@@ -14,6 +14,7 @@ public class SummonMinionController : MonoBehaviour
     public float followPlayerDistance = 10f;
     public LayerMask obstacleLayer;
     public float lifeTime = 15f;
+    public float minDistanceFromPlayer = 3f; //  minimum distance from player
 
     private float summonedTime;
     private Transform playerTransform;
@@ -167,6 +168,7 @@ public class SummonMinionController : MonoBehaviour
 
     public void CastSpell()
     {
+        if (isDying) return;
         if(currentTarget.GetComponent<Collider>() != null)
         {
             Collider targetCollider = currentTarget.GetComponent<Collider>();
@@ -182,16 +184,6 @@ public class SummonMinionController : MonoBehaviour
                 // Determine the direction to cast the spell
                 Vector3 direction = (spellTargetPosition - spellSpawnPoint).normalized;
                 spell.transform.forward = direction;
-
-                //Rigidbody spellRb = spell.GetComponent<Rigidbody>();
-                //if (spellRb != null)
-                //{
-                //    spellRb.velocity = direction * spellSpeed;
-                //}
-                //else
-                //{
-                //    Debug.LogWarning("Spell prefab does not have a Rigidbody component.");
-                //}
             }
         }
     }
@@ -204,9 +196,24 @@ public class SummonMinionController : MonoBehaviour
 
     void FollowPlayer()
     {
+        if (isDying) return;
         currentTarget = null;
         agent.isStopped = false;
-        agent.SetDestination(playerTransform.position);
+
+        Vector3 directionToPlayer = playerTransform.position - transform.position;
+        float distanceToPlayer = directionToPlayer.magnitude;
+
+        if (distanceToPlayer > minDistanceFromPlayer)
+        {
+            // Calculate a position that's minDistanceFromPlayer away from the player
+            Vector3 targetPosition = playerTransform.position - directionToPlayer.normalized * minDistanceFromPlayer;
+            agent.SetDestination(targetPosition);
+        }
+        else
+        {
+            // If already within the minimum distance, stop moving
+            agent.SetDestination(transform.position);
+        }
     }
 
     public void DestroyMinion()

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5870455662529896565}
   - component: {fileID: 3549268254210542633}
   - component: {fileID: 3549345575701173611}
+  - component: {fileID: -7803945983063235141}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -95,12 +96,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FireBallPrefab: {fileID: 5298796137738036286, guid: c3e30705c88e7b54c8fe53bbc72065b6, type: 3}
+  FireBoltManaCost: 5
   FrostBeamPrefab: {fileID: 1062685050423962, guid: b37f5a554254cd74c8a52ce6cd676992, type: 3}
+  FrostBeamManaCost: 10
   MeteorPrefab: {fileID: 164416, guid: 5a8c1139618fc5d48b1b99f244470e39, type: 3}
+  MeteorManaCost: 50
   HealPrefab: {fileID: 879867622200168414, guid: 5294263dad707c64b88cdcf84ea06069, type: 3}
+  HealManaCost: 30
   ShieldPrefab: {fileID: 1289543790355709915, guid: 3812f9b4649a4e24e92490672ee03971, type: 3}
+  ShieldManaCost: 10
   SummonPrefab: {fileID: 3377181292992421420, guid: aeb80d49090d5f748b3fd250131a19e0, type: 3}
+  SummonManaCost: 30
   PortalEnterPrefab: {fileID: 3992058561654064293, guid: fa922a2a982bdeb47afc027a1b170912, type: 3}
+  PortalManaCost: 10
   PortalExitPrefab: {fileID: 4617036660772024948, guid: 52c603e83399b05498d1e54495dd53ac, type: 3}
   teleportOffset: 30
   Tip: {fileID: 2296538096797608881}
@@ -116,6 +124,22 @@ MonoBehaviour:
   rayInteractor: {fileID: 0}
   debug: 0
   PredictionTextField: {fileID: 0}
+--- !u!114 &-7803945983063235141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 539066731346727807}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aaf2f8cd9a5955c439492687db48ab99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseMenuCanvas: {fileID: 0}
+  rayInteractor: {fileID: 0}
+  continueBtn: {fileID: 0}
+  exitToMenuBtn: {fileID: 0}
 --- !u!1 &1954622361805108975
 GameObject:
   m_ObjectHideFlags: 0

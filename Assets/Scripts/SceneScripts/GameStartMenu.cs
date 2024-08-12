@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameStartMenu : MonoBehaviour
@@ -155,7 +156,8 @@ public class GameStartMenu : MonoBehaviour
         {
             pythonConnector.modelName = profileModelName;
             HideAll();
-            SceneTransitionManager.singleton.GoToSceneAsync(1);
+            //SceneTransitionManager.singleton.GoToSceneAsync(1);
+            SceneManager.LoadScene(1);
         }
         else
         {

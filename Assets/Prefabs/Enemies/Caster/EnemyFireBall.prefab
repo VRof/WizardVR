@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 466694}
   - component: {fileID: 10850970}
   - component: {fileID: 3644312139683563687}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Point light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 422502}
   - component: {fileID: 19875644}
   - component: {fileID: 19942726}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4953,7 +4953,7 @@ GameObject:
   - component: {fileID: 411470}
   - component: {fileID: 19800386}
   - component: {fileID: 19959126}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FireBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9682,7 +9682,7 @@ GameObject:
   - component: {fileID: 6581467340484848105}
   - component: {fileID: 2867011194533283587}
   - component: {fileID: 5646453110798328425}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: EnemyFireBall
   m_TagString: enemy_caster_skill
   m_Icon: {fileID: 0}
@@ -9734,7 +9734,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 166258}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 0.5
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -9778,7 +9778,7 @@ GameObject:
   - component: {fileID: 5479370170383832577}
   - component: {fileID: 5479370170402092789}
   - component: {fileID: 5479370170402055167}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Draw fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 54034537497690522}
   - component: {fileID: 135187156854092900}
   - component: {fileID: 196761793205170758}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Projectile 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4983,6 +4983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 605a456cfc02f6b499a64717539a27e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damage: 5
   speed: 15
   hitOffset: 0.1
   UseFirePointRotation: 0
@@ -5031,7 +5032,7 @@ SphereCollider:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1024
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
@@ -5073,7 +5074,7 @@ GameObject:
   - component: {fileID: 4366912051360190}
   - component: {fileID: 198692940710500382}
   - component: {fileID: 199205060469912400}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Electricy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9916,7 +9917,7 @@ GameObject:
   - component: {fileID: 198559730701285930}
   - component: {fileID: 114963004765172870}
   - component: {fileID: 199307829787777340}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sparks
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14770,7 +14771,7 @@ GameObject:
   - component: {fileID: 4106549369329498}
   - component: {fileID: 198194833413760700}
   - component: {fileID: 199193693930752760}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ElectroCore
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -67,6 +67,11 @@ public class Draw : MonoBehaviour
         pythonConnector.OnDataReceived += castSystem.PrepareSkill;
     }
 
+    private void OnDestroy()
+    {
+        pythonConnector.OnDataReceived -= castSystem.PrepareSkill;
+    }
+
     // Update is called once per frame
     void Update()
     {

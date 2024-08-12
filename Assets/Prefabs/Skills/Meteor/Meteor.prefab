@@ -102,13 +102,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 15
+  damage: 50
   lifeTime: 4
   flash: {fileID: 0}
-  hit: {fileID: 0}
+  hit: {fileID: 1607639662943796, guid: a1a36200a3c61b34b9abfaed1373f4cc, type: 3}
   hitOffset: 0.1
   UseFirePointRotation: 0
   Detached: []
   rotationOffset: {x: 0, y: 0, z: 0}
+  explosionRadius: 8
 --- !u!54 &5448022
 Rigidbody:
   m_ObjectHideFlags: 0
