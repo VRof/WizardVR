@@ -5,7 +5,7 @@ using System.Collections;
 public class EnemyCasterController : MonoBehaviour, IDamageable
 {
     [Header("References")]
-    [SerializeField] private Transform target;
+    private GameObject target;
     [SerializeField] private GameObject skillToCast;
     [SerializeField] private Transform enemyCasterCastPoint;
     private NavMeshAgent agent;
@@ -48,6 +48,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     private bool isDying = false;
     private void Start()
     {
+        target = GameObject.Find("PlayerModel");
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
         startPosition = transform.position;
@@ -65,7 +66,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
         if(isDying) return;
         if (target == null) return;
 
-        float sqrDistanceToTarget = (target.position - transform.position).sqrMagnitude;
+        float sqrDistanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
         float sqrDetectionRange = detectionRange * detectionRange;
         float sqrAttackRange = attackRange * attackRange;
 
@@ -114,7 +115,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
         animator.SetBool(IsInCombatParam, true);
         if (!isAttacking)
         {
-            transform.LookAt(target);
+            transform.LookAt(target.transform.position);
             StartCoroutine(AttackCoroutine());
         }
     }
@@ -122,14 +123,14 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     private void ChaseTarget()
     {
         if (isDying) return;
-        agent.SetDestination(target.position);
+        agent.SetDestination(target.transform.position);
     }
 
     private bool CanSeeTarget()
     {
         if (isInCombat)
         {
-            Vector3 direction = target.position - transform.position;
+            Vector3 direction = target.transform.position - 0.1f * Vector3.up - enemyCasterCastPoint.position;
             return !Physics.SphereCast(
                 transform.position,
                 sphereCastRadius,
@@ -159,7 +160,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
             GameObject spellInstance = Instantiate(skillToCast, enemyCasterCastPoint.position, enemyCasterCastPoint.rotation);
             if (spellInstance.TryGetComponent(out Rigidbody spellRb))
             {
-                Vector3 direction = (target.position - 0.1f * Vector3.up - enemyCasterCastPoint.position).normalized;
+                Vector3 direction = (target.transform.position - 0.1f * Vector3.up - enemyCasterCastPoint.position).normalized;
                 spellRb.AddForce(direction * 500f);
             }
         }
