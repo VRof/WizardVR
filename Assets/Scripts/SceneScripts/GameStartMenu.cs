@@ -156,8 +156,7 @@ public class GameStartMenu : MonoBehaviour
         {
             pythonConnector.modelName = profileModelName;
             HideAll();
-            //SceneTransitionManager.singleton.GoToSceneAsync(1);
-            SceneManager.LoadScene(1);
+            SceneTransitionManager.singleton.GoToScene(1);
         }
         else
         {

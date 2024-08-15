@@ -31,7 +31,6 @@ public class InGameMenuScript : MonoBehaviour
             paused = true;
             Time.timeScale = 0f;
         }
-
     }
 
     public void ContinueButtonHandler() { 
@@ -43,6 +42,10 @@ public class InGameMenuScript : MonoBehaviour
     }
 
     public void ExitToMenuButtonHandler() {
-        SceneManager.LoadScene(0);
+        pauseMenuCanvas?.SetActive(false);
+        rayInteractor?.SetActive(false);
+        Time.timeScale = 1f;
+        SceneTransitionManager.singleton.GoToScene(0);
+        paused = false;
     }
 }
