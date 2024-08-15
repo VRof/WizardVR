@@ -26,29 +26,28 @@ public class SceneTransitionManager : MonoBehaviour
     IEnumerator GoToSceneRoutine(int sceneIndex)
     {
         fadeScreen.FadeOut();
+
         yield return new WaitForSeconds(fadeScreen.fadeDuration);
 
-        //Launch the new scene
         SceneManager.LoadScene(sceneIndex);
     }
 
-    public void GoToSceneAsync(int sceneIndex)
-    {
-        StartCoroutine(GoToSceneAsyncRoutine(sceneIndex));
-        Index = sceneIndex;
-    }
+    //public void GoToSceneAsync(int sceneIndex)
+    //{
+    //    StartCoroutine(GoToSceneAsyncRoutine(sceneIndex));
+    //    Index = sceneIndex;
+    //}
 
-    IEnumerator GoToSceneAsyncRoutine(int sceneIndex)
-    {
-        yield return StartCoroutine(fadeScreen.FadeRoutine(0, 1));
-        //Launch the new scene
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
-
-        float timer = 0;
-        while((timer <= fadeScreen.fadeDuration && !operation.isDone) || !operation.isDone)
-        {
-            timer += Time.deltaTime;
-            yield return null;
-        }
-    }
+    //IEnumerator GoToSceneAsyncRoutine(int sceneIndex)
+    //{
+    //    yield return StartCoroutine(fadeScreen.FadeRoutine(0, 1));
+    //    //Launch the new scene
+    //    //AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+    //    float timer = 0;
+    //    while((timer <= fadeScreen.fadeDuration))
+    //    {
+    //        timer += Time.deltaTime;
+    //        yield return null;
+    //    }
+    //}
 }
