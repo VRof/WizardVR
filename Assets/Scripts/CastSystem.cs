@@ -116,17 +116,56 @@ public class CastSystem : MonoBehaviour
         //PredictionsDropdown.Show();
 
     }
-
-    public void okButtonHandler() {
-        string selectedValue = PredictionsDropdown.options[PredictionsDropdown.value].text;
-        int colonIndex = selectedValue.IndexOf(':');
-        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes(selectedValue.Substring(0, colonIndex)));
+    public void IsOthers()
+    {
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("others"));
         Resume();
     }
-
-    public void closeButtonHandler() {
-    
-    Resume();
+    public void IsFireball() 
+    {
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("fireball"));
+        Resume();
+        Cast("fireball");
+    }
+    public void IsFrostbeam()
+    {
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("frostbeam"));
+        Resume();
+        Cast("frostbeam");
+    }
+    public void IsTeleport()
+    {
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("teleport"));
+        Resume();
+        Cast("teleport");
+    }
+    public void IsHeal()
+    {
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("heal"));
+        Resume();
+        Cast("heal");
+    }
+    public void IsShield()
+    {
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("shield"));
+        Resume();
+        Cast("shield"); 
+    }
+    public void IsSummon()
+    {
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("summon"));
+        Resume();
+        Cast("summon");
+    }
+    public void IsMeteor()
+    {
+        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("meteor"));
+        Resume();
+        Cast("meteor");
+    }
+    public void closeButtonHandler() 
+    {
+        Resume();
     }
 
     private void Cast(string maxSkillName)
