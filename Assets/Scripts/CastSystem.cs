@@ -78,16 +78,16 @@ public class CastSystem : MonoBehaviour
             {
                 Cast(maxSkillName);
             }
-            else {
-
-                PredictionsDropdown.ClearOptions();
-                List<string> optionsList = new List<string>();
-                foreach (var skill in skillDict.OrderByDescending(skill => skill.Value))
-                {
-                    optionsList.Add(skill.Key + ": " + skill.Value);
-                }
-                PredictionsDropdown.AddOptions(optionsList);
-                PredictionsDropdown.RefreshShownValue();
+            else 
+            {
+                //PredictionsDropdown.ClearOptions();
+                //List<string> optionsList = new List<string>();
+                //foreach (var skill in skillDict.OrderByDescending(skill => skill.Value))
+                //{
+                //    optionsList.Add(skill.Key + ": " + skill.Value);
+                //}
+                //PredictionsDropdown.AddOptions(optionsList);
+                //PredictionsDropdown.RefreshShownValue();
                 Pause();
             }
 
