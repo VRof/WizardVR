@@ -93,12 +93,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 125b57828f48f6341a08a25936767cb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 1.5
+  attackRange: 2
   attackCooldown: 2.2
   pathUpdateTime: 0.1
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 384
   swordColider: {fileID: 6877512064204542008}
   maxHealth: 20
   healthBar: {fileID: 2935853615691076571}

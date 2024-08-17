@@ -22,20 +22,22 @@ public class PlayerModelController : MonoBehaviour
         {
             Vector3 newPosition = mainCamera.transform.position;
 
-            // Perform a raycast to determine the ground height
+            // Perform a sphere cast to determine the ground height
             RaycastHit hit;
-            if (Physics.Raycast(newPosition, Vector3.down, out hit, maxRaycastDistance, groundLayer))
+            float sphereRadius = 0.5f; // Set this to the desired radius of the sphere
+
+            if (Physics.SphereCast(newPosition, sphereRadius, Vector3.down, out hit, maxRaycastDistance, groundLayer))
             {
                 newPosition.y = hit.point.y; // Set the y position to the ground height
             }
             else
             {
-                Debug.LogWarning("Ground not found within raycast distance.");
+                Debug.LogWarning("Ground not found within sphere cast distance.");
                 // Handle case where ground is not found, e.g., set to a default height or keep current height
                 // newPosition.y = someDefaultHeight;
             }
 
-            transform.position = newPosition + Vector3.up;
+            transform.position = newPosition + Vector3.up*1.2f;
         }
     }
 }

@@ -16515,7 +16515,7 @@ MonoBehaviour:
   detectionRange: 25
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 384
   minion: {fileID: 3670291647857268578, guid: 7f7ad2e17cb44ca44a5310b7d239fa01, type: 3}
   portal: {fileID: 1586826114847994, guid: ea80cbdd13b99fa41909b3619a4c403f, type: 3}
   wanderRadius: 5

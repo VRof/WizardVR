@@ -30,6 +30,12 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     float currentHealth;
     [SerializeField] private EnemyHealthBar healthBar;
 
+    [Header("Path Update")]
+    [SerializeField] private float pathUpdateDelay = 0.2f;
+
+    [Header("Debugging")]
+    [SerializeField] private bool showVisualization = false;
+
     private Collider enemyCollider;
     private Vector3 startPosition;
     private bool isInCombat = false;
@@ -37,7 +43,6 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     private bool isAttacking = false;
     private bool tookDamage = false;
     private float nextUpdateTime;
-    private const float UPDATE_INTERVAL = 0.2f;
     [SerializeField] public static int Damage = -5;
 
     // Animation parameters
@@ -45,7 +50,13 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     private static readonly int IsAttackingParam = Animator.StringToHash("isAttacking");
     private static readonly int IsInCombatParam = Animator.StringToHash("isInCombat");
 
+    private LineRenderer lineRenderer;
+    private GameObject hitSphere;
+
     private bool isDying = false;
+
+    private Coroutine updatePathCoroutine;
+
     private void Start()
     {
         target = GameObject.Find("PlayerModel");
@@ -56,15 +67,36 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
         currentHealth = maxHealth;
         healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
 
-        SetNextWanderTime();
-        InvokeRepeating(nameof(SlowUpdate), 0f, UPDATE_INTERVAL);
+        updatePathCoroutine = StartCoroutine(UpdatePathCoroutine());
+
+        // Set up LineRenderer to draw the ray
+        lineRenderer = gameObject.AddComponent<LineRenderer>();
+        lineRenderer.startWidth = 0.05f;
+        lineRenderer.endWidth = 0.05f;
+        lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+        lineRenderer.startColor = Color.green;
+        lineRenderer.endColor = Color.green;
+
+        // Create a sphere to visualize the hit point
+        hitSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        hitSphere.transform.localScale = Vector3.one * sphereCastRadius * 2;
+        hitSphere.GetComponent<Collider>().enabled = false; // Disable the collider
+        hitSphere.GetComponent<Renderer>().material.color = Color.red;
+        hitSphere.SetActive(false); // Hide initially
     }
 
-
-    private void SlowUpdate()
+    private IEnumerator UpdatePathCoroutine()
     {
-        if(isDying) return;
-        if (target == null) return;
+        while (true)
+        {
+            UpdateBehavior();
+            yield return new WaitForSeconds(pathUpdateDelay);
+        }
+    }
+
+    private void UpdateBehavior()
+    {
+        if (isDying || target == null) return;
 
         float sqrDistanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
         float sqrDetectionRange = detectionRange * detectionRange;
@@ -73,6 +105,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
         if (sqrDistanceToTarget <= sqrDetectionRange || tookDamage)
         {
             isInCombat = true;
+
             if (sqrDistanceToTarget <= sqrAttackRange && CanSeeTarget())
             {
                 StopMovingAndAttack();
@@ -89,6 +122,54 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
         }
 
         UpdateAnimations();
+    }
+
+    private void Update()
+    {
+        // Update visualization if enabled
+        if (showVisualization)
+        {
+            UpdateVisualization();
+        }
+    }
+
+    private void UpdateVisualization()
+    {
+        if (isInCombat && target != null && enemyCasterCastPoint != null)
+        {
+            Vector3 direction = target.transform.position - enemyCasterCastPoint.position + 0.2f * Vector3.up;
+            RaycastHit hit;
+
+            bool hitDetected = Physics.SphereCast(
+                enemyCasterCastPoint.position,
+                sphereCastRadius,
+                direction.normalized,
+                out hit,
+                attackRange,
+                obstacleLayer,
+                QueryTriggerInteraction.Ignore
+            );
+
+            Vector3 endPosition = hitDetected ? hit.point : enemyCasterCastPoint.position + direction.normalized * attackRange;
+            lineRenderer.SetPosition(0, enemyCasterCastPoint.position);
+            lineRenderer.SetPosition(1, endPosition);
+
+            if (hitDetected)
+            {
+                hitSphere.transform.position = hit.point;
+                hitSphere.SetActive(true);
+            }
+            else
+            {
+                hitSphere.SetActive(false);
+            }
+        }
+        else
+        {
+            lineRenderer.SetPosition(0, Vector3.zero);
+            lineRenderer.SetPosition(1, Vector3.zero);
+            hitSphere.SetActive(false);
+        }
     }
 
     private void Wander()
@@ -111,7 +192,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
 
     private void StopMovingAndAttack()
     {
-        agent.ResetPath();
+        agent.ResetPath(); // Stops the agent from moving
         animator.SetBool(IsInCombatParam, true);
         if (!isAttacking)
         {
@@ -128,23 +209,46 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
 
     private bool CanSeeTarget()
     {
-        if (isInCombat)
+        if (isInCombat && target != null && enemyCasterCastPoint != null)
         {
-            Vector3 direction = target.transform.position - 0.1f * Vector3.up - enemyCasterCastPoint.position;
-            return !Physics.SphereCast(
-                transform.position,
+            Vector3 direction = target.transform.position - enemyCasterCastPoint.position + 0.2f * Vector3.up;
+            RaycastHit hit;
+
+            // Perform the sphere cast
+            bool hitDetected = Physics.SphereCast(
+                enemyCasterCastPoint.position,
                 sphereCastRadius,
                 direction.normalized,
-                out RaycastHit hit,
+                out hit,
                 attackRange,
                 obstacleLayer,
                 QueryTriggerInteraction.Ignore
-            ) || hit.transform == target;
+            );
+
+            // Update the LineRenderer to show the ray
+            Vector3 endPosition = hitDetected ? hit.point : enemyCasterCastPoint.position + direction.normalized * attackRange;
+            lineRenderer.SetPosition(0, enemyCasterCastPoint.position);
+            lineRenderer.SetPosition(1, endPosition);
+
+            // Update the hit sphere position
+            if (hitDetected)
+            {
+                hitSphere.transform.position = hit.point;
+                hitSphere.SetActive(true);
+            }
+            else
+            {
+                hitSphere.SetActive(false);
+            }
+
+            // Return whether the target is seen
+            return !hitDetected || hit.transform == target;
         }
-    return false;
+        return false;
     }
 
-    private IEnumerator AttackCoroutine()
+
+private IEnumerator AttackCoroutine()
     {
         isAttacking = true;
         animator.SetBool(IsAttackingParam, true);

@@ -32,6 +32,7 @@ Transform:
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 687850312796248828}
   - {fileID: 2505231114320577430}
   - {fileID: 9061375284473909550}
   m_Father: {fileID: 0}
@@ -70,9 +71,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4299d5b0b0e1cd54786f96062cbbdb27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   skillToCast: {fileID: 166258, guid: e8a107ae5c8c1d648ac84743acfdda6d, type: 3}
-  enemyCasterCastPoint: {fileID: 0}
+  enemyCasterCastPoint: {fileID: 687850312796248828}
   detectionRange: 30
   attackRange: 20
   attackCooldown: 2.5
@@ -82,9 +82,11 @@ MonoBehaviour:
   sphereCastRadius: 0.25
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 384
   maxHealth: 100
   healthBar: {fileID: 7075921158254922537}
+  pathUpdateDelay: 0.2
+  showVisualization: 0
 --- !u!136 &9159008606396884623
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -135,12 +137,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6966807828329679830}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.47, y: 3.854, z: 2.11}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.4699567, y: 3.8540013, z: 2.1100044}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2505231114320577430}
+  m_Father: {fileID: 6577435949312414604}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &647888652197914489
 MeshFilter:
@@ -1420,10 +1422,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 1000013833909578, guid: 3c9c8a8bf50e6b5439ab9db67bc82586, type: 3}
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4000011578242470, guid: 3c9c8a8bf50e6b5439ab9db67bc82586, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 687850312796248828}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1000013586557078, guid: 3c9c8a8bf50e6b5439ab9db67bc82586, type: 3}
       insertIndex: -1
