@@ -76,6 +76,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
         lineRenderer.startColor = Color.green;
         lineRenderer.endColor = Color.green;
+        lineRenderer.enabled = false; // Initially disable the LineRenderer
 
         // Create a sphere to visualize the hit point
         hitSphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -135,7 +136,7 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
 
     private void UpdateVisualization()
     {
-        if (isInCombat && target != null && enemyCasterCastPoint != null)
+        if (showVisualization && isInCombat && target != null && enemyCasterCastPoint != null)
         {
             Vector3 direction = target.transform.position - enemyCasterCastPoint.position + 0.2f * Vector3.up;
             RaycastHit hit;
@@ -163,11 +164,12 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
             {
                 hitSphere.SetActive(false);
             }
+
+            lineRenderer.enabled = true;
         }
         else
         {
-            lineRenderer.SetPosition(0, Vector3.zero);
-            lineRenderer.SetPosition(1, Vector3.zero);
+            lineRenderer.enabled = false;
             hitSphere.SetActive(false);
         }
     }
