@@ -6,6 +6,11 @@ TagManager:
   tags:
   - Anchor
   - PlayerTag
+  - enemy_caster_skill
+  - caster
+  - melee
+  - summoner
+  - skeleton
   layers:
   - Default
   - TransparentFX

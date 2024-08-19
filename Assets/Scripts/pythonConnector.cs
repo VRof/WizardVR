@@ -37,7 +37,7 @@ public class pythonConnector : MonoBehaviour
         mThread.Start();
         CreatePythonProcess();
 
-        StartCoroutine(PauseForSeconds(fadeTime));
+        //StartCoroutine(PauseForSeconds(fadeTime));
     }
     private IEnumerator PauseForSeconds(float seconds)
     {
@@ -107,7 +107,7 @@ public class pythonConnector : MonoBehaviour
 
                     if (dataReceived != null)
                     {
-                        if(dataReceived != "Model loaded" || dataReceived != "Model Updated")
+                        if(dataReceived != "Model loaded" || dataReceived != "Model updated")
                         {
                             OnDataReceived?.Invoke(dataReceived);
                         }

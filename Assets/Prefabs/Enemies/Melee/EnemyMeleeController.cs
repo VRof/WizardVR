@@ -5,7 +5,7 @@ using System.Collections;
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyMeleeController : MonoBehaviour, IDamageable
 {
-    [SerializeField] private Transform target;
+    private Transform target;
     [SerializeField] private float attackRange = 2f;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float runSpeedThreshold = 1.5f;
@@ -43,6 +43,15 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        gameObject.tag = "melee";
+        try
+        {
+            target = GameObject.Find("PlayerModel").transform;
+        }
+        catch
+        {
+            Debug.Log("player model not found!");
+        }
         rightHandCollider.enabled = false;
         leftHandCollider.enabled = false;
         animator = GetComponentInChildren<Animator>();
