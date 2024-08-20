@@ -14,19 +14,19 @@ using UnityEngine.Windows;
 public class CastSystem : MonoBehaviour
 {
     [SerializeField] GameObject FireBallPrefab;
-    [SerializeField] int FireBoltManaCost = 5;
+    [SerializeField] public static int FireBoltManaCost = 5;
     [SerializeField] GameObject FrostBeamPrefab;
-    [SerializeField] int FrostBeamManaCost = 10;
+    [SerializeField] public static int FrostBeamManaCost = 10;
     [SerializeField] GameObject MeteorPrefab;
-    [SerializeField] int MeteorManaCost = 50;
+    [SerializeField] public static int MeteorManaCost = 50;
     [SerializeField] GameObject HealPrefab;
-    [SerializeField] int HealManaCost = 30;
+    [SerializeField] public static int HealManaCost = 30;
     [SerializeField] GameObject ShieldPrefab;
-    [SerializeField] int ShieldManaCost = 10;
+    [SerializeField] public static int ShieldManaCost = 10;
     [SerializeField] GameObject SummonPrefab;
-    [SerializeField] int SummonManaCost = 30;
+    [SerializeField] public static int SummonManaCost = 30;
     [SerializeField] GameObject PortalEnterPrefab;
-    [SerializeField] int PortalManaCost = 10;
+    [SerializeField] public static int PortalManaCost = 10;
     [SerializeField] GameObject PortalExitPrefab;
     [SerializeField] float teleportOffset = 5f;
     [SerializeField] GameObject Tip;
@@ -115,11 +115,6 @@ public class CastSystem : MonoBehaviour
         isPaused = true;
         //PredictionsDropdown.Show();
 
-    }
-    public void IsOthers()
-    {
-        pythonConnector.SetDataToSend(Encoding.UTF8.GetBytes("others"));
-        Resume();
     }
     public void IsFireball() 
     {

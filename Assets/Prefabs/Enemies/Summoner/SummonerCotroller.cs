@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 
 public class SummonerController : MonoBehaviour, IDamageable
 {
-    [SerializeField] private Transform target;
+    private Transform target;
     [SerializeField] private float attackRange = 20f;
     [SerializeField] private float summonCooldown = 5f;
     [SerializeField] private float detectionRange = 25f;
@@ -40,6 +40,15 @@ public class SummonerController : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        gameObject.tag = "summoner";
+        try
+        {
+            target = GameObject.Find("PlayerModel").transform;
+        }
+        catch
+        {
+            Debug.Log("player model not found!");
+        }
         animator = GetComponentInChildren<Animator>();
         agent = GetComponent<NavMeshAgent>();
         startPosition = transform.position;

@@ -8321,7 +8321,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824f28e9883801444b7ceae88a61d836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   attackRange: 2.1
   attackCooldown: 2
   runSpeedThreshold: 3
@@ -26956,7 +26955,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824f28e9883801444b7ceae88a61d836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
   attackRange: 2
   attackCooldown: 1
   runSpeedThreshold: 1.5

@@ -27,6 +27,7 @@ public class SkeletonController : MonoBehaviour, IDamageable
     private bool isDying = false;
     void Start()
     {
+        gameObject.tag = "skeleton";
         swordColider.enabled = false;
         agent = GetComponent<NavMeshAgent>();
         target = GameObject.Find("PlayerModel").transform;

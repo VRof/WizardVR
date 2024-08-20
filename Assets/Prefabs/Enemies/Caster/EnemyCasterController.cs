@@ -59,6 +59,15 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        gameObject.tag = "caster";
+        try
+        {
+            target = GameObject.Find("PlayerModel");
+        }
+        catch
+        {
+            Debug.Log("player model not found!");
+        }
         target = GameObject.Find("PlayerModel");
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
@@ -66,9 +75,14 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
         enemyCollider = GetComponent<Collider>();
         currentHealth = maxHealth;
         healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
-
-        updatePathCoroutine = StartCoroutine(UpdatePathCoroutine());
-
+        try
+        {
+            updatePathCoroutine = StartCoroutine(UpdatePathCoroutine());
+        }
+        catch
+        {
+           
+        }
         // Set up LineRenderer to draw the ray
         lineRenderer = gameObject.AddComponent<LineRenderer>();
         lineRenderer.startWidth = 0.05f;
