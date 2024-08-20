@@ -30,7 +30,6 @@ public class SkeletonController : MonoBehaviour, IDamageable
         gameObject.tag = "skeleton";
         swordColider.enabled = false;
         agent = GetComponent<NavMeshAgent>();
-        target = GameObject.Find("PlayerModel").transform;
         animator = GetComponentInChildren<Animator>();
         enemyCollider = GetComponent<Collider>();
         currentHealth = maxHealth;
@@ -39,6 +38,7 @@ public class SkeletonController : MonoBehaviour, IDamageable
 
     void Update()
     {
+        target = GameObject.Find("PlayerModel").transform;
         if (isDying) return;
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
 

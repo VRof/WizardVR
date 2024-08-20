@@ -124,6 +124,9 @@ MonoBehaviour:
   rayInteractor: {fileID: 0}
   debug: 0
   PredictionTextField: {fileID: 0}
+  teleportDistance: 15
+  spherecastRadius: 0.5
+  raycastHeight: 100
 --- !u!114 &-7803945983063235141
 MonoBehaviour:
   m_ObjectHideFlags: 0

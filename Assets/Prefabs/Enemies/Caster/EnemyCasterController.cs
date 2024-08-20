@@ -241,20 +241,23 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
                 QueryTriggerInteraction.Ignore
             );
 
-            // Update the LineRenderer to show the ray
-            Vector3 endPosition = hitDetected ? hit.point : enemyCasterCastPoint.position + direction.normalized * attackRange;
-            lineRenderer.SetPosition(0, enemyCasterCastPoint.position);
-            lineRenderer.SetPosition(1, endPosition);
+            if (showVisualization)
+            {
+                // Update the LineRenderer to show the ray
+                Vector3 endPosition = hitDetected ? hit.point : enemyCasterCastPoint.position + direction.normalized * attackRange;
+                lineRenderer.SetPosition(0, enemyCasterCastPoint.position);
+                lineRenderer.SetPosition(1, endPosition);
 
-            // Update the hit sphere position
-            if (hitDetected)
-            {
-                hitSphere.transform.position = hit.point;
-                hitSphere.SetActive(true);
-            }
-            else
-            {
-                hitSphere.SetActive(false);
+                // Update the hit sphere position
+                if (hitDetected)
+                {
+                    hitSphere.transform.position = hit.point;
+                    hitSphere.SetActive(true);
+                }
+                else
+                {
+                    hitSphere.SetActive(false);
+                }
             }
 
             // Return whether the target is seen

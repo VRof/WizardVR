@@ -33,6 +33,7 @@ public class CastSystem : MonoBehaviour
     [SerializeField] GameObject PlayerModel;
     [SerializeField] GameObject XRorigin;
 
+
     [SerializeField] LayerMask groundLayer;// Layer mask to filter ground objects
     [SerializeField] LayerMask worldLayer;
     [SerializeField] GameObject PredictionMenuCanvas;
@@ -228,41 +229,92 @@ public class CastSystem : MonoBehaviour
                 }
                 break;
             case "teleport":
-                spawnPoint = GameObject.Find("MeteorSpawnPoint");
-                raycastHeight = 100f; // Height from which to cast the ray
-                                      // Start the raycast from high above the ground
-                rayOrigin = new Vector3(spawnPoint.transform.position.x + Tip.transform.forward.x * 2, raycastHeight, spawnPoint.transform.position.z + Tip.transform.forward.z * 2);
-                //GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
-                // Cast the ray downwards
-                if (!Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, worldLayer))
-                {
-                    if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
-                    {
-                        // Get the position where the ray hit the ground
-                        Vector3 spawnPosition = hit.point;
-                        // Instantiate the object at the hit point
-                        if (CanPlaceExitPortal())
-                        {
-                            if (TryUseMana(PortalManaCost))
-                            {
-                                GameObject portalEnter = Instantiate(PortalEnterPrefab, spawnPosition, new Quaternion(0, Tip.transform.rotation.y, 0, Tip.transform.rotation.w));
-                                portalEnter.transform.position += new Vector3(0, 1, 0);
-                                portalEnter.name = "PortalEnter";
-                            }
-                        }
+                //spawnPoint = GameObject.Find("MeteorSpawnPoint");
+                //raycastHeight = 100f; // Height from which to cast the ray
+                //                      // Start the raycast from high above the ground
+                //rayOrigin = new Vector3(spawnPoint.transform.position.x + Tip.transform.forward.x * 2, raycastHeight, spawnPoint.transform.position.z + Tip.transform.forward.z * 2);
+                ////GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
+                //// Cast the ray downwards
+                //if (!Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, worldLayer))
+                //{
+                //    if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
+                //    {
+                //        // Get the position where the ray hit the ground
+                //        Vector3 spawnPosition = hit.point;
+                //        // Instantiate the object at the hit point
+                //        if (CanPlaceExitPortal())
+                //        {
+                //            if (TryUseMana(PortalManaCost))
+                //            {
+                //                GameObject portalEnter = Instantiate(PortalEnterPrefab, spawnPosition, new Quaternion(0, Tip.transform.rotation.y, 0, Tip.transform.rotation.w));
+                //                portalEnter.transform.position += new Vector3(0, 1, 0);
+                //                portalEnter.name = "PortalEnter";
+                //            }
+                //        }
 
-                    }
-                }
-                else
-                {
-                    Debug.Log("teleport" + "No ground found at position: " + spawnPoint.transform.position);
-                }
+                //    }
+                //}
+                //else
+                //{
+                //    Debug.Log("teleport" + "No ground found at position: " + spawnPoint.transform.position);
+                //}
+
+                TryTeleport();
                 break;
             default:
                 break;
         }
     }
 
+    public float teleportDistance = 15f;
+    public float spherecastRadius = 0.5f;
+    public float raycastHeight = 200f; // Height from which to cast the sphere
+    private void TryTeleport()
+    {
+        // Calculate the target position based on the Tip's forward direction
+        var playerModel = GameObject.Find("PlayerModel");
+        Vector3 targetPosition = playerModel.transform.position + playerModel.transform.forward.normalized * teleportDistance;
+
+        // Start the spherecast from above the target position
+        Vector3 spherecastStart = new Vector3(targetPosition.x, raycastHeight, targetPosition.z);
+
+        // Check for valid teleport area first
+        if (Physics.SphereCast(spherecastStart, spherecastRadius, Vector3.down, out RaycastHit teleportHit, Mathf.Infinity, LayerMask.GetMask("Teleport")))
+        {
+            if (! Physics.SphereCast(teleportHit.point, spherecastRadius, Vector3.down, out RaycastHit worldHit, Mathf.Infinity, LayerMask.GetMask("World")))
+            {
+                // Now check for the ground position
+                {
+                    Debug.Log(teleportHit.collider.gameObject);
+                    // Valid teleportation spot found
+                    Vector3 teleportPosition = new Vector3(teleportHit.point.x, teleportHit.point.y, teleportHit.point.z); // Teleport 1 unit above the ground
+                    PlaceTeleport(teleportPosition);
+                }
+            }
+            else
+            {
+                Debug.Log("Ground not found below teleport area.");
+            }
+        }
+        else
+        {
+            Debug.Log("No valid teleportation surface found.");
+        }
+    }
+
+    private void PlaceTeleport(Vector3 position)
+    {
+        GameObject playerModel = GameObject.Find("PlayerModel");
+
+        if (GameObject.Find("PortalEnter") != null && GameObject.Find("PortalExit")!=null) {
+            Destroy(GameObject.Find("PortalExit"));
+            Destroy(GameObject.Find("PortalEnter"));
+        }
+        GameObject greenPortal = Instantiate(PortalEnterPrefab,playerModel.transform.position + playerModel.transform.forward*1.2f, playerModel.transform.rotation);
+        greenPortal.name = "PortalEnter";
+        GameObject redPortal = Instantiate(PortalExitPrefab, position + 10f * Vector3.up, playerModel.transform.rotation);
+        redPortal.name = "PortalExit";
+    }
     private bool TryUseMana(int amount) {
         if (playerScript.GetCurrentMana() - amount < 0) {
             return false;
@@ -302,61 +354,5 @@ public class CastSystem : MonoBehaviour
 
         return skillDict;
     }
-    private bool CanPlaceExitPortal() {
 
-        GameObject spawnPoint = GameObject.Find("MeteorSpawnPoint");
-        float raycastHeight = 100f; // Height from which to cast the ray
-                                    // Start the raycast from high above the ground
-        float redPortalHeight = 10f;
-
-        GameObject portalExit;
-        Vector3 rayOrigin = new Vector3(spawnPoint.transform.position.x + Tip.transform.forward.x*teleportOffset, raycastHeight, spawnPoint.transform.position.z + Tip.transform.forward.z * teleportOffset);
-        // Cast the ray downwards
-        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, Mathf.Infinity, worldLayer))
-        {
-            //GameObject hitObject = hit.collider.gameObject;
-            Vector3 closestPoint = GetClosestPointOnBoundsInXZ(hit.collider.bounds, hit.point);
-            portalExit = Instantiate(PortalExitPrefab, new Vector3(closestPoint.x, closestPoint.y + redPortalHeight, closestPoint.z) - new Vector3(Tip.transform.forward.x*2,0,Tip.transform.forward.z*2), PortalExitPrefab.transform.rotation);
-            portalExit.name = "PortalExit";
-            return true;
-        }
-        else if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
-        {
-            // Get the position where the ray hit the ground
-            Vector3 spawnPosition = hit.point;
-            // Instantiate the object at the hit point
-            Debug.Log("red portal on world object");
-            portalExit = Instantiate(PortalExitPrefab, new Vector3(spawnPosition.x, spawnPosition.y + redPortalHeight, spawnPosition.z), PortalExitPrefab.transform.rotation);
-            portalExit.name = "PortalExit";
-            return true;
-        }
-
-        return false;
-    }
-    Vector3 GetClosestPointOnBoundsInXZ(Bounds bounds, Vector3 point)
-    {
-        Vector3 closestPoint = point;
-
-        // Determine the closest x boundary
-        if (Mathf.Abs(point.x - bounds.min.x) < Mathf.Abs(point.x - bounds.max.x))
-        {
-            closestPoint.x = bounds.min.x;
-        }
-        else
-        {
-            closestPoint.x = bounds.max.x;
-        }
-
-        // Determine the closest z boundary
-        if (Mathf.Abs(point.z - bounds.min.z) < Mathf.Abs(point.z - bounds.max.z))
-        {
-            closestPoint.z = bounds.min.z;
-        }
-        else
-        {
-            closestPoint.z = bounds.max.z;
-        }
-
-        return closestPoint;
-    }
 }

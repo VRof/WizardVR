@@ -10,9 +10,7 @@ public class EnterPortalController : MonoBehaviour
     GameObject ExitPortal;
     void Start()
     {
-        ExitPortal = GameObject.Find("PortalExit");
-        Destroy(ExitPortal,lifeTime);
-        Destroy(gameObject,lifeTime);
+        Destroy(gameObject, lifeTime);
     }
 
     // Update is called once per frame
@@ -23,8 +21,10 @@ public class EnterPortalController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        ExitPortal = GameObject.Find("PortalExit");
         GameObject obj = other.gameObject;
-
+        if(obj.layer!=LayerMask.NameToLayer("Teleport"))
         obj.transform.position = ExitPortal.transform.position;
     }
+
 }

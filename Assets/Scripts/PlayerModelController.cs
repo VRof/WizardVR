@@ -22,6 +22,14 @@ public class PlayerModelController : MonoBehaviour
         {
             Vector3 newPosition = mainCamera.transform.position;
 
+            // Calculate the direction towards the camera's forward on the horizontal plane (Y-axis)
+            Vector3 cameraForward = mainCamera.transform.forward;
+            cameraForward.y = 0; // Zero out the Y component to ensure no vertical rotation
+            cameraForward.Normalize(); // Normalize to make it a unit vector
+
+            // Set the object's forward direction to the horizontal direction
+            transform.forward = cameraForward;
+
             // Perform a sphere cast to determine the ground height
             RaycastHit hit;
             float sphereRadius = 0.5f; // Set this to the desired radius of the sphere
