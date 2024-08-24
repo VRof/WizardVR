@@ -4908,8 +4908,8 @@ MonoBehaviour:
   enemyCasterPrefab: {fileID: 5133804202016867204, guid: 1f8cc5049f079af44b9343a4ab810528, type: 3}
   enemySpawnerPrefab: {fileID: 6638365844124365083, guid: 3a4d2a3c64127884d9831cdc6e4bac39, type: 3}
   enemySkeletonPrefab: {fileID: 3670291647857268578, guid: 7f7ad2e17cb44ca44a5310b7d239fa01, type: 3}
-  minimumSpawnTime: 5
-  maximumSpawnTime: 15
+  minimumSpawnTime: 8
+  maximumSpawnTime: 20
 --- !u!1 &1308042509045837125
 GameObject:
   m_ObjectHideFlags: 0

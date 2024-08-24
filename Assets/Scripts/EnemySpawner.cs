@@ -27,7 +27,7 @@ public class EnemySpawner : MonoBehaviour
     {
         timeUntilNextSpawn -= Time.deltaTime;
 
-        if (timeUntilNextSpawn <= 0)
+        if (timeUntilNextSpawn <= 0 && CountEnemiesController.canSpawnEnemy)
         {
             SpawnRandomEnemy();
             SetTimeUntilSpawn();

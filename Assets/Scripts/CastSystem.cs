@@ -43,11 +43,18 @@ public class CastSystem : MonoBehaviour
     [SerializeField] bool debug = false;
     [SerializeField] TMP_Text PredictionTextField;
 
+    [Header("Skills Text")]
+    [SerializeField] TMP_Text fireballText;
+    [SerializeField] TMP_Text frostbeamText;
+    [SerializeField] TMP_Text teleportText;
+    [SerializeField] TMP_Text meteorText;
+    [SerializeField] TMP_Text healText;
+    [SerializeField] TMP_Text summonText;
+    [SerializeField] TMP_Text shieldText;
 
 
     GameObject currentSkill;
     Player playerScript;
-    TMP_Dropdown PredictionsDropdown;
     bool isPaused = false;
     //// Update is called once per frame
 
@@ -62,7 +69,6 @@ public class CastSystem : MonoBehaviour
         if (debug && PredictionTextField != null) {
             PredictionTextField.text = "['fireball 0.00%', 'frostbeam 0.00%', 'heal 0.00%', 'meteor 0.00%', 'others 0.00%', 'shield 0.00%', 'summon 0.00%', 'teleport 0.00%']";
         }
-        PredictionsDropdown = PredictionMenuCanvas.GetComponentInChildren<TMP_Dropdown>();
     }
 
     public void PrepareSkill(string PredictionArray)
@@ -81,19 +87,18 @@ public class CastSystem : MonoBehaviour
             }
             else 
             {
-                //PredictionsDropdown.ClearOptions();
-                //List<string> optionsList = new List<string>();
-                //foreach (var skill in skillDict.OrderByDescending(skill => skill.Value))
-                //{
-                //    optionsList.Add(skill.Key + ": " + skill.Value);
-                //}
-                //PredictionsDropdown.AddOptions(optionsList);
-                //PredictionsDropdown.RefreshShownValue();
+                fireballText.text = " fireball" + ": " + skillDict["fireball"].ToString() + "%";
+                frostbeamText.text = " frostbeam" + ": " + skillDict["frostbeam"].ToString() + "%";
+                teleportText.text = " teleport" + ": " + skillDict["teleport"].ToString() + "%";
+                meteorText.text = " meteor" + ": " + skillDict["meteor"].ToString() + "%";
+                healText.text = " heal" + ": " + skillDict["heal"].ToString() + "%";
+                summonText.text = " summon" + ": " + skillDict["summon"].ToString() + "%";
+                shieldText.text = " shield" + ": " + skillDict["shield"].ToString() + "%";
                 Pause();
             }
 
         }, null);
-        
+    
     }
 
     public void Resume()
