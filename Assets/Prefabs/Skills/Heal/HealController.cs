@@ -13,7 +13,7 @@ public class HealController : MonoBehaviour
     {
         playerModel = GameObject.Find("PlayerModel");
         playerScript = playerModel.GetComponent<Player>();
-        playerScript.PlayerUpdateRegenerationSpeed(regenerationAmount);
+        playerScript.PlayerUpdateRegenerationSpeed((int)regenerationAmount);
         Destroy(gameObject,liveTime);
     }
 

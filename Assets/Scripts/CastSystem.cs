@@ -52,7 +52,8 @@ public class CastSystem : MonoBehaviour
     [SerializeField] TMP_Text summonText;
     [SerializeField] TMP_Text shieldText;
 
-
+    [SerializeField] AudioSource notEnoughManaSpeech;
+    
     GameObject currentSkill;
     Player playerScript;
     bool isPaused = false;
@@ -65,6 +66,7 @@ public class CastSystem : MonoBehaviour
 
     private void Start()
     {
+        if (notEnoughManaSpeech) notEnoughManaSpeech.enabled = true;
         playerScript = GameObject.Find("PlayerModel").GetComponent<Player>();
         if (debug && PredictionTextField != null) {
             PredictionTextField.text = "['fireball 0.00%', 'frostbeam 0.00%', 'heal 0.00%', 'meteor 0.00%', 'others 0.00%', 'shield 0.00%', 'summon 0.00%', 'teleport 0.00%']";
@@ -234,36 +236,6 @@ public class CastSystem : MonoBehaviour
                 }
                 break;
             case "teleport":
-                //spawnPoint = GameObject.Find("MeteorSpawnPoint");
-                //raycastHeight = 100f; // Height from which to cast the ray
-                //                      // Start the raycast from high above the ground
-                //rayOrigin = new Vector3(spawnPoint.transform.position.x + Tip.transform.forward.x * 2, raycastHeight, spawnPoint.transform.position.z + Tip.transform.forward.z * 2);
-                ////GameObject meteor = Instantiate(MeteorPrefab, spawnPoint.transform.position, new Quaternion(0, 0, 0, 0));
-                //// Cast the ray downwards
-                //if (!Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, worldLayer))
-                //{
-                //    if (Physics.Raycast(rayOrigin, Vector3.down, out hit, Mathf.Infinity, groundLayer))
-                //    {
-                //        // Get the position where the ray hit the ground
-                //        Vector3 spawnPosition = hit.point;
-                //        // Instantiate the object at the hit point
-                //        if (CanPlaceExitPortal())
-                //        {
-                //            if (TryUseMana(PortalManaCost))
-                //            {
-                //                GameObject portalEnter = Instantiate(PortalEnterPrefab, spawnPosition, new Quaternion(0, Tip.transform.rotation.y, 0, Tip.transform.rotation.w));
-                //                portalEnter.transform.position += new Vector3(0, 1, 0);
-                //                portalEnter.name = "PortalEnter";
-                //            }
-                //        }
-
-                //    }
-                //}
-                //else
-                //{
-                //    Debug.Log("teleport" + "No ground found at position: " + spawnPoint.transform.position);
-                //}
-
                 TryTeleport();
                 break;
             default:
@@ -322,6 +294,9 @@ public class CastSystem : MonoBehaviour
     }
     private bool TryUseMana(int amount) {
         if (playerScript.GetCurrentMana() - amount < 0) {
+            if (notEnoughManaSpeech && !notEnoughManaSpeech.isPlaying) {
+                notEnoughManaSpeech.Play();
+            }
             return false;
         }
         playerScript.PlayerUpdateMana(-amount);

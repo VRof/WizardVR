@@ -18,7 +18,7 @@ public class Player : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-        currentMana = 10;
+        currentMana = maxMana;
         healthBar.UpdateHealthBar(maxHealth, currentHealth, HealthRegenerationAmount);
         manaBar.UpdateManaBar(maxMana, currentMana, ManaRegenerationAmount);
 

@@ -80,12 +80,6 @@ public class SummonerController : MonoBehaviour, IDamageable
                 agent.SetDestination(target.position);
             }
         }
-        else
-        {
-            isInCombat = false;
-            Wander();
-        }
-
         UpdateAnimations();
     }
 

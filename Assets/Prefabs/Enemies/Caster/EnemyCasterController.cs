@@ -68,7 +68,6 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
         {
             Debug.Log("player model not found!");
         }
-        target = GameObject.Find("PlayerModel");
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
         startPosition = transform.position;
@@ -113,29 +112,36 @@ public class EnemyCasterController : MonoBehaviour, IDamageable
     {
         if (isDying || target == null) return;
 
-        float sqrDistanceToTarget = (target.transform.position - transform.position).sqrMagnitude;
-        float sqrDetectionRange = detectionRange * detectionRange;
-        float sqrAttackRange = attackRange * attackRange;
-
-        if (sqrDistanceToTarget <= sqrDetectionRange || tookDamage)
+        float distanceToTarget = (target.transform.position - transform.position).magnitude;
+        if (!isInCombat)
         {
-            isInCombat = true;
-
-            if (sqrDistanceToTarget <= sqrAttackRange && CanSeeTarget())
+            if (tookDamage)
             {
-                StopMovingAndAttack();
+                isInCombat = true;
             }
             else
             {
-                ChaseTarget();
+                
+                if (distanceToTarget <= attackRange)
+                    isInCombat = true;
             }
         }
-        else
-        {
-            isInCombat = false;
-            Wander();
+        if (isInCombat) {
+            if (distanceToTarget > attackRange)
+            {
+                ChaseTarget();
+            }
+            else {
+                bool canCastSpell = CanSeeTarget();
+                if (canCastSpell)
+                {
+                    StopMovingAndAttack();
+                }
+                else {
+                    ChaseTarget();
+                }
+            }
         }
-
         UpdateAnimations();
     }
 

@@ -169,7 +169,7 @@ public class SummonMinionController : MonoBehaviour
     public void CastSpell()
     {
         if (isDying) return;
-        if(currentTarget.GetComponent<Collider>() != null)
+        if(currentTarget?.GetComponent<Collider>() != null)
         {
             Collider targetCollider = currentTarget.GetComponent<Collider>();
             if (targetCollider != null)

@@ -88,7 +88,7 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
 
     private IEnumerator UpdatePathRoutine()
     {
-        WaitForSeconds wait = new WaitForSeconds(0.1f);
+        WaitForSeconds wait = new WaitForSeconds(0.3f);
         while (!isDying && enabled)
         {
             if (isInCombat && !isAttacking)
@@ -137,28 +137,10 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
         float distanceToTarget = Vector3.Distance(transform.position, target.position);
         if (distanceToTarget <= attackRange && !isAttacking)
         {
-            if (CanSeeTarget())
-            {
-                StartCoroutine(AttackTarget());
-            }
+          StartCoroutine(AttackTarget());
         }
     }
 
-    private bool CanSeeTarget()
-    {
-        if (isInCombat)
-        {
-            Vector3 directionToTarget = (target.position - transform.position).normalized;
-            if (Physics.Raycast(transform.position, directionToTarget, out RaycastHit hit, attackRange, obstacleLayer))
-            {
-                // If we hit something that's not the target, we can't see the target
-                return hit.transform == target;
-            }
-            // If we didn't hit anything, we can see the target
-            return true;
-        }
-        return false;
-    }
 
     private void SetNextWanderTime()
     {
@@ -229,7 +211,7 @@ public class EnemyMeleeController : MonoBehaviour, IDamageable
         }
         else
         {
-            animator.SetTrigger("Hit");
+            //animator.SetTrigger("Hit");
             healthBar.UpdateEnemyHealthBar(maxHealth, currentHealth);
         }
     }

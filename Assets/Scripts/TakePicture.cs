@@ -15,6 +15,8 @@ public class TakePicture : MonoBehaviour
 
     static int index = 0;
 
+    public static bool SaveImages = false;
+
     public static void SavePicture(Camera cam, LineRenderer currentDrawing) {
 
         GameObject tip = GameObject.Find("tip");
@@ -45,11 +47,14 @@ public class TakePicture : MonoBehaviour
         byte[] bytes = Image.EncodeToJPG();
         lastPictureSaved = bytes;
 
-        // Save to file
-        string currentTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-        string filePath = Path.Combine(Application.persistentDataPath, "drawing_" + currentTime + ".jpg");
-        File.WriteAllBytes(filePath, bytes);
-        Debug.Log("Image saved to: " + filePath);
+        if (SaveImages)
+        {
+            // Save to file
+            string currentTime = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            string filePath = Path.Combine(Application.persistentDataPath, "drawing_" + currentTime + ".jpg");
+            File.WriteAllBytes(filePath, bytes);
+            Debug.Log("Image saved to: " + filePath);
+        }
 
         Destroy(Image);
     }

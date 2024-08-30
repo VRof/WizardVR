@@ -122,15 +122,17 @@ if __name__ == "__main__":
 
     profile_name:str = ""
 
-    load_initial_buffer(experience_replay, class_names)
-    loaded_model = load_saved_model(os.path.dirname(os.path.abspath(sys.argv[0])) + "/models/" + "spell_recognition_model.h5")
 
     try:
         host, port = "127.0.0.1", 25001
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.connect((host, port))
+        profile_name = sock.recv(10000).decode('utf-8')
+        load_initial_buffer(experience_replay, class_names)
+        loaded_model = load_saved_model(os.path.dirname(os.path.abspath(sys.argv[0])) + "/models/" + profile_name +".h5")
+        sock.sendall("Model loaded".encode("UTF-8"))
     except Exception as e:
-        print(f"Error connecting to socket: {e}")
+        print(f"Error connecting to socket or load data: {e}")
         exit(1)
 
     while True:
@@ -140,7 +142,6 @@ if __name__ == "__main__":
         else:
             try:
                 drawn_image = Image.open(io.BytesIO(received_data))
-                print("new spell")
                 predicted_skill, confidence, prediction_array = predict_skill(loaded_model, drawn_image, class_names)
                 prediction_array = prediction_array * 100
                 print(f"Predicted skill: {predicted_skill}")
@@ -151,14 +152,14 @@ if __name__ == "__main__":
                         experience_replay.add_sample(drawn_image, class_names.index(predicted_skill))
                     if 0.90 < confidence <= 0.95:
                         loss = update_model(loaded_model, experience_replay, drawn_image, class_names.index(predicted_skill))
-                        loaded_model.save(profile_name + ".h5")
+                        loaded_model.save(os.path.dirname(os.path.abspath(sys.argv[0])) + "/models/" + profile_name +".h5")
             except Exception as e:
                 try:
                     text_from_user = received_data.decode('utf-8')
                     print(text_from_user)
                     if text_from_user in class_names: #new label for image during the game 
                         loss = update_model(loaded_model, experience_replay, drawn_image, class_names.index(text_from_user))
-                        loaded_model.save(profile_name + ".h5")
+                        loaded_model.save(os.path.dirname(os.path.abspath(sys.argv[0])) + "/models/" + profile_name +".h5")
                         sock.sendall("Model updated".encode("UTF-8"))
                     # else: #the game is loaded we should recieve profile name
                     #     profile_name = text_from_user

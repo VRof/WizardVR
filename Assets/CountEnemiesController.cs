@@ -5,6 +5,7 @@ using UnityEngine;
 public class CountEnemiesController : MonoBehaviour
 {
     public static bool canSpawnEnemy;
+    public int maxEnemiesAmount = 10;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,13 +19,13 @@ public class CountEnemiesController : MonoBehaviour
         GameObject[] casterEnemies = GameObject.FindGameObjectsWithTag("caster");
         GameObject[] summonerEnemies = GameObject.FindGameObjectsWithTag("summoner");
         GameObject[] skeletonEnemies = GameObject.FindGameObjectsWithTag("skeleton");
-        if(meleeEnemies.Length + casterEnemies.Length + summonerEnemies.Length + skeletonEnemies.Length < 100)
+        if(meleeEnemies.Length + casterEnemies.Length + summonerEnemies.Length + skeletonEnemies.Length < maxEnemiesAmount)
         {
             canSpawnEnemy = true;
         }
         else
         {
-            Debug.Log("enemies reached 100 cant spawn more");
+            //Debug.Log("enemies reached 100 cant spawn more");
             canSpawnEnemy = false;
         }
     }

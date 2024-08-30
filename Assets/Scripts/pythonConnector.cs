@@ -27,33 +27,55 @@ public class pythonConnector : MonoBehaviour
     public static string modelName;
     [SerializeField] int fadeTime;
     [SerializeField] TMPro.TMP_Text startLabel;
+    [Header("Debug")]
+    [SerializeField] bool UseDefaultModel = false; //in order to work from scene 2
+
+
     public delegate void DataReceivedEventHandler(string data);
     public static event DataReceivedEventHandler OnDataReceived;
+    private static bool modelIsLoaded = false;
+    private bool drawingEnabled = false;
 
     private void Start()
     {
+        if (UseDefaultModel)
+            modelName = "debug_model";
+        gameObject.GetComponent<Draw>().enabled = false;
         ThreadStart ts = new ThreadStart(GetInfo);
         mThread = new Thread(ts);
         mThread.Start();
         CreatePythonProcess();
 
+        SetDataToSend(Encoding.UTF8.GetBytes(modelName));
+
+        //player.PlayerUpdateMana(-1000);
+        //player.PlayerUpdateManaRegenerationSpeed(0);
+
         //StartCoroutine(PauseForSeconds(fadeTime));
+    }
+
+    private void Update()
+    {
+        if (modelIsLoaded && !drawingEnabled) {
+            drawingEnabled = true;
+            GameObject.Find("LoadingMessage").SetActive(false);
+            gameObject.GetComponent<Draw>().enabled = true;
+        }
     }
     private IEnumerator PauseForSeconds(float seconds)
     {
+
         Time.timeScale = 0;
-        UnityEngine.Debug.Log("Time paused");
         gameObject.GetComponent<Draw>().enabled = false;
         gameObject.GetComponent<InGameMenuScript>().enabled = false;
         yield return new WaitForSecondsRealtime(seconds);
         gameObject.GetComponent<Draw>().enabled = true;
         gameObject.GetComponent<InGameMenuScript>().enabled = true;
         Time.timeScale = 1;
-        UnityEngine.Debug.Log("Time resumed");
 
         if (startLabel != null)
             startLabel.enabled = false;
-       // SetDataToSend(Encoding.UTF8.GetBytes(modelName));
+        
         UnityEngine.Debug.Log(modelName + "sent");
     }
     private void CreatePythonProcess() {
@@ -107,13 +129,17 @@ public class pythonConnector : MonoBehaviour
 
                     if (dataReceived != null)
                     {
-                        if(dataReceived != "Model loaded" || dataReceived != "Model updated")
+                        if (dataReceived == "Model loaded")
+                        {
+                            modelIsLoaded = true;
+                            UnityEngine.Debug.Log("Model loaded");
+                        }
+                        else if (dataReceived == "Model updated") { //if model updated
+                            UnityEngine.Debug.Log("Model updated");
+                        }
+                        else //prediction result
                         {
                             OnDataReceived?.Invoke(dataReceived);
-                        }
-                        else
-                        {
-                            UnityEngine.Debug.Log(dataReceived);
                         }
                     }
                 }

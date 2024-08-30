@@ -14,8 +14,8 @@ GameObject:
   - component: {fileID: -3768957681372952446}
   - component: {fileID: 5448022}
   - component: {fileID: 9617906}
-  - component: {fileID: 8206854}
   - component: {fileID: 13509832}
+  - component: {fileID: 1867672098985182147}
   m_Layer: 8
   m_Name: Meteor
   m_TagString: Untagged
@@ -108,9 +108,9 @@ MonoBehaviour:
   hit: {fileID: 1607639662943796, guid: a1a36200a3c61b34b9abfaed1373f4cc, type: 3}
   hitOffset: 0.1
   UseFirePointRotation: 0
+  explosionRadius: 8
   Detached: []
   rotationOffset: {x: 0, y: 0, z: 0}
-  explosionRadius: 8
 --- !u!54 &5448022
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -251,7 +251,28 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 0
---- !u!82 &8206854
+--- !u!135 &13509832
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164416}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!82 &1867672098985182147
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -261,9 +282,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: dd4cb05799dab124e9b5105f893be5d5, type: 3}
+  m_audioClip: {fileID: 8300000, guid: dbd0bf408ea2d6f4886a043781bc194e, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -272,9 +293,9 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 7.92
+  MaxDistance: 500
   Pan2D: 0
-  rolloffMode: 2
+  rolloffMode: 0
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -282,37 +303,10 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.004
-      value: 0.99683
+      time: 0
+      value: 1
       inSlope: 0
-      outSlope: -1.004016
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.18509033
-      value: 0.9100903
-      inSlope: -0.0962615
-      outSlope: -0.0962615
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.41638598
-      value: 0.49863774
-      inSlope: -4.861736
-      outSlope: -4.861736
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.6766128
-      value: 0.08242076
-      inSlope: -0.09983778
-      outSlope: -0.09983778
+      outSlope: 0
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
@@ -320,7 +314,7 @@ AudioSource:
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: -1.004016
+      inSlope: 0
       outSlope: 0
       tangentMode: 0
       weightedMode: 0
@@ -334,7 +328,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0.5
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -374,27 +368,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!135 &13509832
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 164416}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &1346249001124388178
 PrefabInstance:
   m_ObjectHideFlags: 0

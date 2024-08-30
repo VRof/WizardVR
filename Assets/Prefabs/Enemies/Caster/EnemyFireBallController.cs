@@ -27,9 +27,9 @@ public class EnemyFireBallController : MonoBehaviour
         {
             if (collisionObject.CompareTag("PlayerTag"))
             {
-                Player playerComponent = collisionObject.GetComponent<Player>();
-                playerComponent.PlayerUpdateHealth(-EnemyCasterSkillDamage);
-                //add sound and shit
+                Player playerComponent = collisionObject?.GetComponent<Player>();
+                playerComponent?.PlayerUpdateHealth(-EnemyCasterSkillDamage);
+                
             }
         }
         Destroy(gameObject);

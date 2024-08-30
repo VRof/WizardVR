@@ -115,7 +115,7 @@ public class Projectile : MonoBehaviour
             else
             {
                 var hitPsParts = hitInstance.transform.GetChild(0).GetComponent<ParticleSystem>();
-                Destroy(hitInstance, hitPsParts.main.duration);
+                Destroy(hitInstance, hitPsParts.main.duration - 0.2f);
             }
         }
     }

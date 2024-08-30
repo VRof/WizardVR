@@ -43,6 +43,6 @@ public class EnemySpawner : MonoBehaviour
     {
         int randomIndex = Random.Range(0, enemyPrefabs.Length);
         GameObject randomEnemyPrefab = enemyPrefabs[randomIndex];
-        Instantiate(randomEnemyPrefab, transform.position, Quaternion.identity);
+        Instantiate(randomEnemyPrefab, transform.position, transform.rotation);
     }
 }

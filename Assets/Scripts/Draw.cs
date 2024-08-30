@@ -17,8 +17,11 @@ public class Draw : MonoBehaviour
     public float penWidth = 0.03f;
     [SerializeField][Range(0.01f, 0.5f)] private float DrawOffset = 0.1f;
     [SerializeField] private Camera cam;
+    [SerializeField] float movementThreshold = 0.5f; // Threshold for player movement
+    [SerializeField] GameObject playerModel;
     private LineRenderer currentDrawing = null;
     private CastSystem castSystem;
+    private Vector3 startDrawingPosition;
 
     public static System.Threading.SynchronizationContext syncContext;
     // for Habib ************************************************
@@ -76,9 +79,29 @@ public class Draw : MonoBehaviour
     void Update()
     {
         InputDevices.GetDeviceAtXRNode(XRNode.RightHand).IsPressed(InputHelpers.Button.TriggerButton, out bool rightJoystickButtonPressed);
+
         if (rightJoystickButtonPressed)
         {
-            draw();
+            if (currentDrawing == null)
+            {
+                startDrawingPosition = playerModel.transform.position; // Store the starting position
+            }
+
+            // Check if player has moved beyond the threshold
+            if (Vector3.Distance(playerModel.transform.position, startDrawingPosition) >= movementThreshold)
+            {
+                // Remove the current drawing
+                if (currentDrawing != null)
+                {
+                    Destroy(currentDrawing.gameObject);
+                    currentDrawing = null;
+                }
+                startDrawingPosition = playerModel.transform.position; // Reset the starting position
+            }
+            else
+            {
+                draw();
+            }
         }
         else if (!rightJoystickButtonPressed)
         {
@@ -95,7 +118,6 @@ public class Draw : MonoBehaviour
 
     void draw()
     {
-
         if (currentDrawing == null)
         {
             currentDrawing = new GameObject().AddComponent<LineRenderer>();
@@ -106,7 +128,7 @@ public class Draw : MonoBehaviour
             currentDrawing.numCornerVertices = 20;
             currentDrawing.numCapVertices = 20;
             currentDrawing.SetPosition(0, tip.transform.position);
-            currentDrawing.gameObject.layer = LayerMask.NameToLayer("Projection"); 
+            currentDrawing.gameObject.layer = LayerMask.NameToLayer("Projection");
         }
         else
         {
