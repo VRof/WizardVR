@@ -1024,6 +1024,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 569465568}
   distanceFromPlayer: 4
+  minDistanceToReposition: 50
 --- !u!224 &769569024 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5902441442985033572, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}

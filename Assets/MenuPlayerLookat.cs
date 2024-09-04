@@ -5,22 +5,30 @@ using UnityEngine;
 public class MenuPlayerLookat : MonoBehaviour
 {
     public Transform playerCamera;
-    public float distanceFromPlayer = 2.0f; // Distance to place the menu from the player
-
-    private bool isRotated = false;
+    public float distanceFromPlayer = 4f; // Distance to place the menu from the player
+    public float minDistanceToReposition = 50f; // Minimum distance to trigger a reposition
+    private Vector3 previousCameraPosition;
+    private Quaternion previousCameraRotation;
 
     private void Start()
     {
-        // Start the coroutine to position the menu after a brief delay
-        StartCoroutine(DelayedPositionMenu());
+        // Initialize the previous camera position and rotation
+        previousCameraPosition = playerCamera.position;
+        previousCameraRotation = playerCamera.rotation;
     }
 
-    private IEnumerator DelayedPositionMenu()
+    private void Update()
     {
-        yield return new WaitForSeconds(2);
+        // Check if the camera has moved significantly
+        if (Vector3.Distance(playerCamera.position, previousCameraPosition) > minDistanceToReposition ||
+            Quaternion.Angle(playerCamera.rotation, previousCameraRotation) > minDistanceToReposition)
+        {
+            PositionMenu();
 
-        PositionMenu();
-        isRotated = true;
+            // Update the previous camera position and rotation
+            previousCameraPosition = playerCamera.position;
+            previousCameraRotation = playerCamera.rotation;
+        }
     }
 
     private void PositionMenu()
