@@ -55,6 +55,8 @@ MonoBehaviour:
   penWidth: 0.03
   DrawOffset: 0.01
   cam: {fileID: 0}
+  movementThreshold: 0.5
+  playerModel: {fileID: 0}
 --- !u!114 &5870455662529896565
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,6 +73,7 @@ MonoBehaviour:
   connectionPort: 25001
   fadeTime: 0
   startLabel: {fileID: 0}
+  UseDefaultModel: 0
 --- !u!114 &3549268254210542633
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,19 +99,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FireBallPrefab: {fileID: 5298796137738036286, guid: c3e30705c88e7b54c8fe53bbc72065b6, type: 3}
-  FireBoltManaCost: 5
   FrostBeamPrefab: {fileID: 1062685050423962, guid: b37f5a554254cd74c8a52ce6cd676992, type: 3}
-  FrostBeamManaCost: 10
   MeteorPrefab: {fileID: 164416, guid: 5a8c1139618fc5d48b1b99f244470e39, type: 3}
-  MeteorManaCost: 50
   HealPrefab: {fileID: 879867622200168414, guid: 5294263dad707c64b88cdcf84ea06069, type: 3}
-  HealManaCost: 30
   ShieldPrefab: {fileID: 1289543790355709915, guid: 3812f9b4649a4e24e92490672ee03971, type: 3}
-  ShieldManaCost: 10
   SummonPrefab: {fileID: 3377181292992421420, guid: aeb80d49090d5f748b3fd250131a19e0, type: 3}
-  SummonManaCost: 30
   PortalEnterPrefab: {fileID: 3992058561654064293, guid: fa922a2a982bdeb47afc027a1b170912, type: 3}
-  PortalManaCost: 10
   PortalExitPrefab: {fileID: 4617036660772024948, guid: 52c603e83399b05498d1e54495dd53ac, type: 3}
   teleportOffset: 30
   Tip: {fileID: 2296538096797608881}
@@ -124,6 +120,14 @@ MonoBehaviour:
   rayInteractor: {fileID: 0}
   debug: 0
   PredictionTextField: {fileID: 0}
+  fireballText: {fileID: 0}
+  frostbeamText: {fileID: 0}
+  teleportText: {fileID: 0}
+  meteorText: {fileID: 0}
+  healText: {fileID: 0}
+  summonText: {fileID: 0}
+  shieldText: {fileID: 0}
+  notEnoughManaSpeech: {fileID: 0}
   teleportDistance: 15
   spherecastRadius: 0.5
   raycastHeight: 100

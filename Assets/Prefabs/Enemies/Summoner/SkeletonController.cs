@@ -44,11 +44,9 @@ public class SkeletonController : MonoBehaviour, IDamageable
 
         if (distanceToTarget <= attackRange && !isAttacking && Time.time >= lastAttackTime + attackCooldown)
         {
-            if (CanSeeTarget())
-            {
+
                 StopMoving();
                 StartCoroutine(Attack());
-            }
         }
         else if (!isAttacking)
         {
@@ -56,15 +54,7 @@ public class SkeletonController : MonoBehaviour, IDamageable
         }
     }
 
-    private bool CanSeeTarget()
-    {
-        Vector3 directionToTarget = (target.position - transform.position).normalized;
-        if (Physics.Raycast(transform.position, directionToTarget, out RaycastHit hit, attackRange, obstacleLayer))
-        {
-            return hit.transform == target;
-        }
-        return true;
-    }
+
 
     private void StopMoving()
     {

@@ -1,5 +1,8 @@
 using System.Collections;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class Player : MonoBehaviour
 {
@@ -13,22 +16,27 @@ public class Player : MonoBehaviour
     [SerializeField] private Bar healthBar;
     [SerializeField] private Bar manaBar;
 
+    [Header("DeathScreenObjects")]
+    [SerializeField] GameObject DeathScreenCanvas;
+    [SerializeField] GameObject rayInteractor;
+    [SerializeField] Button restartBtn;
+    [SerializeField] Button mainMenuBtn;
 
-
+    public static Player instance;
     void Start()
     {
+        if (instance == null) { instance = this; };
         currentHealth = maxHealth;
         currentMana = maxMana;
         healthBar.UpdateHealthBar(maxHealth, currentHealth, HealthRegenerationAmount);
         manaBar.UpdateManaBar(maxMana, currentMana, ManaRegenerationAmount);
 
         StartCoroutine(RegenerateRoutine());
+
+        restartBtn.onClick.AddListener(RestartSceneBtnHandler);
+        mainMenuBtn.onClick.AddListener(ExitToMenuButtonHandler);
     }
 
-    void Update()
-    {
-
-    }
 
     private IEnumerator RegenerateRoutine() {
         while (true)
@@ -70,9 +78,24 @@ public class Player : MonoBehaviour
         HealthRegenerationAmount = (int)amount;
     }
     
-    private void PlayerDie()
+    public void PlayerDie()
     {
+        Time.timeScale = 0;
+        DeathScreenCanvas.SetActive(true);
+        Draw drawscript = GameObject.Find("Player").GetComponent<Draw>();
+        drawscript.enabled = false;
+        rayInteractor.SetActive(true);
+    }
 
+    public void ExitToMenuButtonHandler()
+    {
+        Time.timeScale = 1;
+        SceneTransitionManager.singleton.GoToScene(0);
+    }
+
+    public void RestartSceneBtnHandler() {
+        Time.timeScale = 1;
+        SceneTransitionManager.singleton.GoToScene(1);
     }
 
     private void OnCollisionEnter(Collision collision)

@@ -28,16 +28,18 @@ public class pythonConnector : MonoBehaviour
     [SerializeField] int fadeTime;
     [SerializeField] TMPro.TMP_Text startLabel;
     [Header("Debug")]
-    [SerializeField] bool UseDefaultModel = false; //in order to work from scene 2
+    [SerializeField] bool UseDefaultModel = false; //in order to be able to work directly from scene 2
 
 
     public delegate void DataReceivedEventHandler(string data);
     public static event DataReceivedEventHandler OnDataReceived;
-    private static bool modelIsLoaded = false;
-    private bool drawingEnabled = false;
+    private static bool modelIsLoaded;
+    private bool drawingEnabled;
 
     private void Start()
     {
+        modelIsLoaded = false;
+        drawingEnabled = false;
         if (UseDefaultModel)
             modelName = "debug_model";
         gameObject.GetComponent<Draw>().enabled = false;
@@ -45,7 +47,7 @@ public class pythonConnector : MonoBehaviour
         mThread = new Thread(ts);
         mThread.Start();
         CreatePythonProcess();
-
+        GameObject.Find("LoadingMessage").SetActive(true);
         SetDataToSend(Encoding.UTF8.GetBytes(modelName));
 
         //player.PlayerUpdateMana(-1000);
@@ -82,7 +84,7 @@ public class pythonConnector : MonoBehaviour
         ProcessStartInfo startInfo = new ProcessStartInfo();
         startInfo.FileName = "python";
         startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\"";
-        startInfo.UseShellExecute = true;
+        startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         pythonProcess = Process.Start(startInfo);
         UnityEngine.Debug.Log("python called");

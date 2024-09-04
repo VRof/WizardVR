@@ -8302,7 +8302,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 1.5
+  m_StoppingDistance: 1
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -8322,7 +8322,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 824f28e9883801444b7ceae88a61d836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 2.5
+  attackRange: 1.8
   attackCooldown: 2
   runSpeedThreshold: 3
   detectionRange: 20
@@ -8380,7 +8380,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 10
+  MaxDistance: 15
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
