@@ -14,10 +14,11 @@ public class WinningMenuCanvas : MonoBehaviour
     [SerializeField] Button restartBtn;
     [SerializeField] Button exitToMenuBtn;
     public static bool isWin;
-    bool menuOn = false;
+    bool menuOn;
 
     void Start()
     {
+        menuOn = false;
         isWin = false;
         tourMapBtn.onClick.AddListener(TourMapButtonHandler);
         restartBtn.onClick.AddListener(RestartButtonHandler);

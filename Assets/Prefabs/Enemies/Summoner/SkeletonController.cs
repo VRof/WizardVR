@@ -74,7 +74,7 @@ public class SkeletonController : MonoBehaviour, IDamageable
         animator.SetBool("isRunning", false);
         animator.SetTrigger("isAttacking");
         lastAttackTime = Time.time;
-        
+        gameObject.transform.LookAt(target.position);
 
         // Wait for the attack animation to finish
         yield return new WaitForSeconds(attackCooldown);

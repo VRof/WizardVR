@@ -12,10 +12,11 @@ public class InGameMenuScript : MonoBehaviour
     [SerializeField] GameObject rayInteractor;
     [SerializeField] Button continueBtn;
     [SerializeField] Button exitToMenuBtn;
-    bool paused = false;
+    bool paused;
     // Start is called before the first frame update
     void Start()
     {
+        paused = false;
         continueBtn.onClick.AddListener(ContinueButtonHandler);
         exitToMenuBtn.onClick.AddListener(ExitToMenuButtonHandler);
     }

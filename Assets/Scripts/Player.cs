@@ -23,8 +23,10 @@ public class Player : MonoBehaviour
     [SerializeField] Button mainMenuBtn;
 
     public static Player instance;
+    private bool playerIsDead;
     void Start()
     {
+        playerIsDead = false;
         if (instance == null) { instance = this; };
         currentHealth = maxHealth;
         currentMana = maxMana;
@@ -49,6 +51,7 @@ public class Player : MonoBehaviour
 
     public void PlayerUpdateHealth(float amount)
     {
+        if (playerIsDead) return;
         currentHealth += amount;
         if (currentHealth <= 0)
         {
@@ -80,6 +83,7 @@ public class Player : MonoBehaviour
     
     public void PlayerDie()
     {
+        playerIsDead = true;
         Time.timeScale = 0;
         DeathScreenCanvas.SetActive(true);
         Draw drawscript = GameObject.Find("Player").GetComponent<Draw>();

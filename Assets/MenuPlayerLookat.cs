@@ -17,7 +17,7 @@ public class MenuPlayerLookat : MonoBehaviour
 
     private IEnumerator DelayedPositionMenu()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
 
         PositionMenu();
         isRotated = true;

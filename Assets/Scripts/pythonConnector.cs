@@ -82,24 +82,24 @@ public class pythonConnector : MonoBehaviour
     }
     private void CreatePythonProcess() {
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = "python";
-        startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\"";
-        startInfo.UseShellExecute = false;
+        startInfo.FileName = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.exe") + "\"";
+        //startInfo.FileName = "python";
+        //startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\"";
+        startInfo.UseShellExecute = true;
         startInfo.CreateNoWindow = true;
         pythonProcess = Process.Start(startInfo);
-        UnityEngine.Debug.Log("python called");
     }
 
     private void OnApplicationQuit()
     {
         mThread?.Abort();
-        pythonProcess?.Kill();
+        KillProcessByName("UnityPython");
     }
 
     private void OnDestroy()
     {
         mThread?.Abort();
-        pythonProcess?.Kill();
+        KillProcessByName("UnityPython");
     }
 
     void GetInfo()
@@ -153,6 +153,36 @@ public class pythonConnector : MonoBehaviour
 
     public static void SetDataToSend(byte[] image) {
         myWriteBuffer = image; 
+    }
+
+    public static void KillProcessByName(string processName)
+    {
+        try
+        {
+            // Get all processes with the specified name
+            var processes = Process.GetProcessesByName(processName);
+
+            // Iterate through the list and kill each process
+            foreach (var process in processes)
+            {
+                process.Kill();
+                process.WaitForExit(); // Ensures the process is fully terminated
+                process.Dispose(); // Clean up resources
+            }
+
+            if (processes.Length > 0)
+            {
+                UnityEngine.Debug.Log($"{processes.Length} process(es) named {processName} were killed.");
+            }
+            else
+            {
+                UnityEngine.Debug.Log($"No processes named {processName} found.");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            UnityEngine.Debug.LogError($"An error occurred while trying to kill process {processName}: {ex.Message}");
+        }
     }
 }
 
