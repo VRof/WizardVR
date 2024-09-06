@@ -6,14 +6,13 @@ import sys
 import numpy as np
 import os
 import tensorflow as tf
-from tensorflow.keras.optimizers import Adam
 
 from PIL import Image
 
 # Function to load the model
 def load_saved_model(model_path):
     model = tf.keras.models.load_model(model_path)
-    model.compile(optimizer=Adam(learning_rate=0.001),
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
     return model

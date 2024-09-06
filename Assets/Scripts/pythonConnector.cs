@@ -3,11 +3,11 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using UnityEngine;
+using System;
 using System.Diagnostics;
 using System.IO;
-using Unity.VisualScripting;
 using System.Collections;
-using TMPro;
+using UnityEditor;
 
 
 public class pythonConnector : MonoBehaviour
@@ -82,24 +82,33 @@ public class pythonConnector : MonoBehaviour
     }
     private void CreatePythonProcess() {
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.exe") + "\"";
+        startInfo.FileName = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.exe");
+
+        startInfo.WorkingDirectory = Path.Combine(Application.dataPath);
         //startInfo.FileName = "python";
         //startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\"";
-        startInfo.UseShellExecute = true;
+        startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         pythonProcess = Process.Start(startInfo);
     }
 
     private void OnApplicationQuit()
     {
+        running = false;
+        listener?.Stop();
+        client?.Close();
         mThread?.Abort();
         KillProcessByName("UnityPython");
     }
 
     private void OnDestroy()
     {
-        mThread?.Abort();
-        KillProcessByName("UnityPython");
+        // Stop the listener when the object is destroyed
+        running = false; // Make sure the loop in GetInfo stops
+        listener?.Stop(); // Close the listener if it exists
+        client?.Close();  // Close the client connection if it's open
+        mThread?.Abort(); // Stop the background thread
+        KillProcessByName("UnityPython"); // Kill the Python process
     }
 
     void GetInfo()
