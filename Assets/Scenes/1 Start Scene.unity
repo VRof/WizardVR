@@ -867,7 +867,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Delete
+  m_text: 'Delete Profile
 
 '
   m_isRightToLeft: 0
@@ -1369,7 +1369,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -723}
+  m_AnchoredPosition: {x: 0, y: -749}
   m_SizeDelta: {x: 920, y: 215}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &894564220
@@ -1985,7 +1985,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -159}
+  m_AnchoredPosition: {x: 0, y: -425}
   m_SizeDelta: {x: 920, y: 215}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1898506171
@@ -2455,6 +2455,18 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 865101845462447079, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
+      propertyPath: m_Color.b
+      value: 0.6965174
+      objectReference: {fileID: 0}
+    - target: {fileID: 865101845462447079, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 865101845462447079, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
+      propertyPath: m_Color.r
+      value: 0.6094339
+      objectReference: {fileID: 0}
     - target: {fileID: 1243404080293732719, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -2485,7 +2497,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1403974667046007427, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -458
+      value: -168
       objectReference: {fileID: 0}
     - target: {fileID: 1650711103661290072, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2618,6 +2630,10 @@ PrefabInstance:
     - target: {fileID: 6197856724126056673, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
       propertyPath: m_Name
       value: Game Menu UI
+      objectReference: {fileID: 0}
+    - target: {fileID: 6197856724126056673, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6355449478839917892, guid: af1a8a5ce255e2040a0f8a4136c4be3f, type: 3}
       propertyPath: m_IsActive

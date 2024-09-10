@@ -29,6 +29,7 @@ public class pythonConnector : MonoBehaviour
     [SerializeField] TMPro.TMP_Text startLabel;
     [Header("Debug")]
     [SerializeField] bool UseDefaultModel = false; //in order to be able to work directly from scene 2
+    [SerializeField] bool UsePythonCode = true; //use .py instead of exe for development process
 
 
     public delegate void DataReceivedEventHandler(string data);
@@ -58,7 +59,8 @@ public class pythonConnector : MonoBehaviour
 
     private void Update()
     {
-        if (modelIsLoaded && !drawingEnabled) {
+        if (modelIsLoaded && !drawingEnabled)
+        {
             drawingEnabled = true;
             GameObject.Find("LoadingMessage").SetActive(false);
             gameObject.GetComponent<Draw>().enabled = true;
@@ -77,17 +79,29 @@ public class pythonConnector : MonoBehaviour
 
         if (startLabel != null)
             startLabel.enabled = false;
-        
+
         UnityEngine.Debug.Log(modelName + "sent");
     }
-    private void CreatePythonProcess() {
+    private void CreatePythonProcess()
+    {
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.exe");
+
+        if (UsePythonCode)
+        {
+            startInfo.FileName = "python";
+            startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\"";
+            startInfo.UseShellExecute = true;
+
+        }
+        else
+        {
+            startInfo.FileName = Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.exe");
+            startInfo.UseShellExecute = false;
+        }
 
         startInfo.WorkingDirectory = Path.Combine(Application.dataPath);
         //startInfo.FileName = "python";
         //startInfo.Arguments = "\"" + Path.Combine(Application.dataPath, "Scripts", "UnityPython", "UnityPython.py") + "\"";
-        startInfo.UseShellExecute = false;
         startInfo.CreateNoWindow = true;
         pythonProcess = Process.Start(startInfo);
     }
@@ -98,6 +112,7 @@ public class pythonConnector : MonoBehaviour
         listener?.Stop();
         client?.Close();
         mThread?.Abort();
+        pythonProcess?.Kill();
         KillProcessByName("UnityPython");
     }
 
@@ -108,6 +123,7 @@ public class pythonConnector : MonoBehaviour
         listener?.Stop(); // Close the listener if it exists
         client?.Close();  // Close the client connection if it's open
         mThread?.Abort(); // Stop the background thread
+        pythonProcess?.Kill();
         KillProcessByName("UnityPython"); // Kill the Python process
     }
 
@@ -145,7 +161,8 @@ public class pythonConnector : MonoBehaviour
                             modelIsLoaded = true;
                             UnityEngine.Debug.Log("Model loaded");
                         }
-                        else if (dataReceived == "Model updated") { //if model updated
+                        else if (dataReceived == "Model updated")
+                        { //if model updated
                             UnityEngine.Debug.Log("Model updated");
                         }
                         else //prediction result
@@ -160,8 +177,9 @@ public class pythonConnector : MonoBehaviour
         listener.Stop();
     }
 
-    public static void SetDataToSend(byte[] image) {
-        myWriteBuffer = image; 
+    public static void SetDataToSend(byte[] image)
+    {
+        myWriteBuffer = image;
     }
 
     public static void KillProcessByName(string processName)

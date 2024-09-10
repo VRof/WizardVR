@@ -16510,9 +16510,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9cfa3b866d146d4d9eac9de259ffcbc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 25
+  attackRange: 20
   summonCooldown: 3.05
-  detectionRange: 25
+  detectionRange: 30
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 384

@@ -132,7 +132,7 @@ if __name__ == "__main__":
         sock.sendall("Model loaded".encode("UTF-8"))
     except Exception as e:
         print(f"Error connecting to socket or load data: {e}")
-        exit(1)
+        sys.exit(1)
 
     while True:
         received_data = sock.recv(10000)

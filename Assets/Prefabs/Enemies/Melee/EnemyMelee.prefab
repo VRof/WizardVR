@@ -8325,7 +8325,7 @@ MonoBehaviour:
   attackRange: 1.8
   attackCooldown: 2
   runSpeedThreshold: 3
-  detectionRange: 20
+  detectionRange: 30
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 384
