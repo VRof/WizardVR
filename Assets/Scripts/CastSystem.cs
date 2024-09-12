@@ -14,19 +14,21 @@ using UnityEngine.Windows;
 public class CastSystem : MonoBehaviour
 {
     [SerializeField] GameObject FireBallPrefab;
-    [SerializeField] public static int FireBoltManaCost = 5;
+    public static int FireBoltManaCost = 5;
     [SerializeField] GameObject FrostBeamPrefab;
-    [SerializeField] public static int FrostBeamManaCost = 10;
+    public static int FrostBeamManaCost = 15;
     [SerializeField] GameObject MeteorPrefab;
-    [SerializeField] public static int MeteorManaCost = 50;
+    public static int MeteorManaCost = 50;
     [SerializeField] GameObject HealPrefab;
-    [SerializeField] public static int HealManaCost = 30;
+    public static int HealManaCost = 30;
     [SerializeField] GameObject ShieldPrefab;
-    [SerializeField] public static int ShieldManaCost = 10;
+    public static int ShieldManaCost = 20;
     [SerializeField] GameObject SummonPrefab;
-    [SerializeField] public static int SummonManaCost = 30;
+    public static int SummonManaCost = 30;
     [SerializeField] GameObject PortalEnterPrefab;
-    [SerializeField] public static int PortalManaCost = 10;
+    public static int PortalManaCost = 40;
+    public float teleportDistance = 15f;
+
     [SerializeField] GameObject PortalExitPrefab;
     [SerializeField] float teleportOffset = 5f;
     [SerializeField] GameObject Tip;
@@ -243,11 +245,10 @@ public class CastSystem : MonoBehaviour
         }
     }
 
-    public float teleportDistance = 15f;
-    public float spherecastRadius = 0.5f;
-    public float raycastHeight = 200f; // Height from which to cast the sphere
     private void TryTeleport()
     {
+        var spherecastRadius = 0.5f;
+        var raycastHeight = 200f;
         // Calculate the target position based on the Tip's forward direction
         var playerModel = GameObject.Find("PlayerModel");
         Vector3 targetPosition = playerModel.transform.position + playerModel.transform.forward.normalized * teleportDistance;
@@ -262,10 +263,11 @@ public class CastSystem : MonoBehaviour
             {
                 // Now check for the ground position
                 {
-                    Debug.Log(teleportHit.collider.gameObject);
-                    // Valid teleportation spot found
-                    Vector3 teleportPosition = new Vector3(teleportHit.point.x, teleportHit.point.y, teleportHit.point.z); // Teleport 1 unit above the ground
-                    PlaceTeleport(teleportPosition);
+                    if(TryUseMana(PortalManaCost)){
+                        // Valid teleportation spot found
+                        Vector3 teleportPosition = new Vector3(teleportHit.point.x, teleportHit.point.y, teleportHit.point.z);
+                        PlaceTeleport(teleportPosition); 
+                    }
                 }
             }
             else

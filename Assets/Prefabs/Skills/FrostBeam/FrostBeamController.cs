@@ -41,7 +41,7 @@ public class FrostBeamController : MonoBehaviour
     void ShootRay()
     {
         RaycastHit hit;
-        if (Physics.Raycast(tip.transform.position, tip.transform.forward, out hit, rayDistance, targetLayers))
+        if (Physics.Raycast(tip.transform.position - tip.transform.forward*0.5f, tip.transform.forward, out hit, rayDistance, targetLayers))
         {
             ApplyDamage(hit.collider);
         }

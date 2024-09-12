@@ -5,9 +5,16 @@ using UnityEngine;
 public class close_to_cathedral_speech_script : MonoBehaviour
 {
     private AudioSource speech;
-
+    private bool wasplayed;
+    private void Update()
+    {
+        if (!speech.isPlaying && wasplayed) { 
+        Destroy(gameObject);
+        }
+    }
     void Start()
     {
+        wasplayed = false;
         speech = GetComponent<AudioSource>();
     }
 
@@ -15,6 +22,7 @@ public class close_to_cathedral_speech_script : MonoBehaviour
     {
         if (other.gameObject.CompareTag("PlayerTag"))
         {
+            wasplayed = true;
             // Play the speech audio
             if (speech != null && !speech.isPlaying)
             {

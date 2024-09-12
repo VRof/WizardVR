@@ -74,6 +74,7 @@ MonoBehaviour:
   fadeTime: 0
   startLabel: {fileID: 0}
   UseDefaultModel: 0
+  UsePythonCode: 1
 --- !u!114 &3549268254210542633
 MonoBehaviour:
   m_ObjectHideFlags: 0

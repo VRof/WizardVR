@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.XR.Interaction.Toolkit;
-using UnityEngine.XR;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using UnityEngine.XR;
+using UnityEngine.XR.Interaction.Toolkit;
 
 public class InGameMenuScript : MonoBehaviour
 {
@@ -13,28 +10,52 @@ public class InGameMenuScript : MonoBehaviour
     [SerializeField] Button continueBtn;
     [SerializeField] Button exitToMenuBtn;
     bool paused;
-    // Start is called before the first frame update
+    bool lastMenuButtonState;
+
     void Start()
     {
         paused = false;
+        lastMenuButtonState = false;
         continueBtn.onClick.AddListener(ContinueButtonHandler);
         exitToMenuBtn.onClick.AddListener(ExitToMenuButtonHandler);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).IsPressed(InputHelpers.Button.MenuButton, out bool MenuButtonPressed);
-        if (!paused && MenuButtonPressed) {
-            gameObject.GetComponent<Draw>().enabled = false;
-            rayInteractor.SetActive(true);
-            pauseMenuCanvas.SetActive(true);
-            paused = true;
-            Time.timeScale = 0f;
+        InputDevices.GetDeviceAtXRNode(XRNode.LeftHand).IsPressed(InputHelpers.Button.MenuButton, out bool menuButtonPressed);
+
+        // Check for button press (transition from not pressed to pressed)
+        if (menuButtonPressed && !lastMenuButtonState)
+        {
+            TogglePauseState();
+        }
+
+        lastMenuButtonState = menuButtonPressed;
+    }
+
+    void TogglePauseState()
+    {
+        if (!paused)
+        {
+            PauseGame();
+        }
+        else
+        {
+            ContinueButtonHandler();
         }
     }
 
-    public void ContinueButtonHandler() { 
+    void PauseGame()
+    {
+        gameObject.GetComponent<Draw>().enabled = false;
+        rayInteractor.SetActive(true);
+        pauseMenuCanvas.SetActive(true);
+        paused = true;
+        Time.timeScale = 0f;
+    }
+
+    public void ContinueButtonHandler()
+    {
         pauseMenuCanvas?.SetActive(false);
         rayInteractor.SetActive(false);
         gameObject.GetComponent<Draw>().enabled = true;
@@ -42,7 +63,8 @@ public class InGameMenuScript : MonoBehaviour
         paused = false;
     }
 
-    public void ExitToMenuButtonHandler() {
+    public void ExitToMenuButtonHandler()
+    {
         pauseMenuCanvas?.SetActive(false);
         rayInteractor?.SetActive(false);
         Time.timeScale = 1f;
