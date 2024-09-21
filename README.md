@@ -1,3 +1,7 @@
+## About the project:
+Vr game which implements dynamic CNN model learning during the gameplay (improves prediction of magic skills by player's drawing style)
+
+Documentation can be found in DOCUMENTATION folder
 ## Download fully compiled game with installer (windows only, vr app must be installed):
 https://mega.nz/folder/8XokQLzQ#Dy7y0sugydKLJf8EQjb4lA
 
